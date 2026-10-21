@@ -13,8 +13,9 @@
     <link rel="icon" type="image/svg+xml" href="%BASE_URL%icono.svg" />
     <link rel="apple-touch-icon" href="%BASE_URL%icono.svg" />
 
-    <meta name="theme-color" content="#f4f6f9" media="(prefers-color-scheme: light)" />
-    <meta name="theme-color" content="#101318" media="(prefers-color-scheme: dark)" />
+    <!-- Lo repinta ui/usarTema.ts: con el tema forzado, un meta con media
+         query se quedaría en el color contrario. -->
+    <meta name="theme-color" content="#f4f6f9" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-title" content="SchemePlay" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />

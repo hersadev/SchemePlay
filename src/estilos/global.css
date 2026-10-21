@@ -80,6 +80,40 @@ body {
   overscroll-behavior: none;
 }
 
+/*
+ * Acciones flotantes del nodo. Se muestran por CSS y no por estado de React:
+ * `onPointerLeave` no se dispara cuando el nodo se aparta del cursor por un
+ * recálculo del layout —crear un hijo recoloca el mapa entero— ni de forma
+ * fiable tras una captura de puntero al arrastrar, así que el grupo se quedaba
+ * pegado. El `:hover` del navegador sí se reevalúa en cada cambio de layout.
+ */
+.acciones-nodo {
+  visibility: hidden;
+  opacity: 0;
+  transition:
+    opacity 0.12s ease,
+    visibility 0.12s;
+}
+
+@media (hover: hover) {
+  [data-nodo]:hover > .acciones-nodo {
+    visibility: visible;
+    opacity: 1;
+  }
+}
+
+/*
+ * Con dedo no hay hover, y en iOS el :hover se queda pegado tras un toque.
+ * Ahí las acciones salen solo en el nodo seleccionado, que además es lo que
+ * evita que aparezcan tres grupos a la vez al recorrer el mapa con el dedo.
+ */
+@media (hover: none) {
+  [data-nodo][data-sel='1'] > .acciones-nodo {
+    visibility: visible;
+    opacity: 1;
+  }
+}
+
 /* El lienzo ya gestiona sus propios gestos; que el navegador no interfiera. */
 [role='application'] {
   -webkit-user-select: none;

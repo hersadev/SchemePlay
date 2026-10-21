@@ -7,12 +7,21 @@ import { EditorEsquema } from './rutas/EditorEsquema'
 import { Panel } from './rutas/Panel'
 import { Biblioteca } from './ui/Biblioteca'
 import { Boton } from './ui/Boton'
-import { IconoBiblioteca, IconoCerrar, IconoPanelIzq } from './ui/iconos'
+import {
+  IconoBiblioteca,
+  IconoCerrar,
+  IconoLuna,
+  IconoPanelIzq,
+  IconoSistema,
+  IconoSol,
+} from './ui/iconos'
+import { usarTema } from './ui/usarTema'
 import { usarPreferencia } from './ui/usarPreferencia'
 
 export function App() {
   const [cajon, setCajon] = useState(false)
   const [verBiblioteca, setVerBiblioteca] = usarPreferencia('biblioteca', true)
+  const { tema, siguiente } = usarTema()
   const ubicacion = useLocation()
 
   return (
@@ -57,6 +66,28 @@ export function App() {
         >
           Repaso
         </Link>
+
+        <Boton
+          icono
+          variante="fantasma"
+          onClick={siguiente}
+          title={
+            tema === 'sistema'
+              ? 'Tema: según el sistema'
+              : tema === 'claro'
+                ? 'Tema: claro'
+                : 'Tema: oscuro'
+          }
+          aria-label={
+            tema === 'sistema'
+              ? 'Tema según el sistema. Pulsa para forzar el claro'
+              : tema === 'claro'
+                ? 'Tema claro. Pulsa para forzar el oscuro'
+                : 'Tema oscuro. Pulsa para volver al del sistema'
+          }
+        >
+          {tema === 'sistema' ? <IconoSistema /> : tema === 'claro' ? <IconoSol /> : <IconoLuna />}
+        </Boton>
 
         <Link
           to="/ajustes"

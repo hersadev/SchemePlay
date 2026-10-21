@@ -9,6 +9,7 @@ import { listarInstantaneas, restaurarInstantanea, tomarInstantanea } from '../d
 import type { FicheroTrasvase } from '../datos/tipos'
 import { Boton } from '../ui/Boton'
 import { IconoExportar, IconoImportar } from '../ui/iconos'
+import { TEMAS, usarTema } from '../ui/usarTema'
 
 const DIA = 86_400_000
 
@@ -26,6 +27,7 @@ type Fase =
 export function Ajustes() {
   const [fase, setFase] = useState<Fase>({ tipo: 'inicio' })
   const [dispositivo, setDispositivo] = useState(idDispositivo())
+  const { tema, setTema } = usarTema()
   const selector = useRef<HTMLInputElement>(null)
 
   const estado = useLiveQuery(async () => {
@@ -274,6 +276,29 @@ export function Ajustes() {
             Aún no hay ninguna. Se toma una automáticamente antes de cada importación.
           </p>
         )}
+      </section>
+
+      <section className="flex flex-col gap-3">
+        <h2 className="text-[11px] font-semibold uppercase tracking-[0.1em] text-[var(--tenue)]">
+          Apariencia
+        </h2>
+        <div className="flex flex-wrap gap-1.5">
+          {TEMAS.map((t) => (
+            <Boton
+              key={t.valor}
+              variante={tema === t.valor ? 'solido' : 'suave'}
+              onClick={() => setTema(t.valor)}
+              aria-pressed={tema === t.valor}
+            >
+              {t.etiqueta}
+            </Boton>
+          ))}
+        </div>
+        <p className="text-xs leading-relaxed text-[var(--tenue)]">
+          «Según el sistema» sigue al modo nocturno del Mac o del iPad. Como las demás
+          preferencias de interfaz, se guarda en este dispositivo y no viaja en el fichero de
+          trasvase.
+        </p>
       </section>
 
       <section className="flex flex-col gap-3">

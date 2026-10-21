@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef } from 'react'
 import { estiloDe, FAMILIA } from './estilo'
 import type { Colocado } from './layout'
 import { IconoHermano, IconoHijo, IconoPapelera } from '../ui/iconos'
@@ -54,7 +54,6 @@ export function NodoMental({
   alCrearHermano,
   alBorrar,
 }: Props) {
-  const [raton, setRaton] = useState(false)
   const estilo = estiloDe(colocado.profundidad)
   const esRaiz = colocado.profundidad === 0
   const campo = useRef<HTMLTextAreaElement>(null)
@@ -114,12 +113,11 @@ export function NodoMental({
   return (
     <div
       data-nodo={colocado.id}
+      data-sel={seleccionado ? '1' : '0'}
       onPointerDown={bajar}
       onPointerMove={mover}
       onPointerUp={soltar}
       onPointerCancel={soltar}
-      onPointerEnter={() => setRaton(true)}
-      onPointerLeave={() => setRaton(false)}
       onDoubleClick={(e) => {
         e.stopPropagation()
         alEditar(colocado.id)
@@ -202,26 +200,34 @@ export function NodoMental({
         lienzo, a un 40 % de zoom quedarían en ocho píxeles y serían
         inservibles justo cuando más falta hacen.
       */}
-      {acciones && (raton || seleccionado) && !editando && (
+      {acciones && !editando && (
         <div
+          className="acciones-nodo"
           style={{
             position: 'absolute',
-            // Anclado por el borde inferior, justo encima del nodo: con `top`
-            // fijo, el contraescalado lo hacía crecer hacia dentro y tapaba el
-            // texto del propio nodo.
-            bottom: 'calc(100% + 5px)',
+            // Anclado por el borde inferior: con `top` fijo, el contraescalado
+            // lo hacía crecer hacia dentro y tapaba el texto del nodo.
+            bottom: '100%',
             [colocado.lado === 'der' ? 'left' : 'right']: 0,
+            // El hueco es relleno y no margen a propósito: así forma parte del
+            // área que mantiene el :hover y el cursor puede subir del nodo a
+            // los botones sin cruzar una franja muerta que los esconda.
+            paddingBottom: 5,
             transform: `scale(${1 / Math.max(escala, 0.25)})`,
             transformOrigin: colocado.lado === 'der' ? 'left bottom' : 'right bottom',
-            display: 'flex',
-            gap: 2,
-            padding: 2,
-            borderRadius: 7,
-            background: 'var(--lamina)',
-            border: '1px solid var(--linea)',
-            boxShadow: '0 1px 4px rgba(0,0,0,0.12)',
           }}
         >
+          <div
+            style={{
+              display: 'flex',
+              gap: 2,
+              padding: 2,
+              borderRadius: 7,
+              background: 'var(--lamina)',
+              border: '1px solid var(--linea)',
+              boxShadow: '0 1px 4px rgba(0,0,0,0.12)',
+            }}
+          >
           {alCrearHijo && (
             <AccionNodo
               etiqueta="Añadir rama hija"
@@ -249,6 +255,7 @@ export function NodoMental({
               <IconoPapelera tamano={13} />
             </AccionNodo>
           )}
+          </div>
         </div>
       )}
 
