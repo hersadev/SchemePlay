@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="SchemePlay">
+  <rect width="512" height="512" rx="104" fill="#27418c" />
+  <g fill="none" stroke="#f4f6f9" stroke-width="15" stroke-linecap="round">
+    <path d="M300 256c40 0 42-52 86-52" />
+    <path d="M300 256c40 0 42 52 86 52" />
+    <path d="M212 256c-40 0-42-52-86-52" />
+    <path d="M212 256c-40 0-42 52-86 52" />
+  </g>
+  <rect x="196" y="222" width="120" height="68" rx="22" fill="#f4f6f9" />
+  <g fill="#f4f6f9">
+    <rect x="386" y="178" width="74" height="52" rx="18" />
+    <rect x="386" y="282" width="74" height="52" rx="18" />
+    <rect x="52" y="178" width="74" height="52" rx="18" />
+    <rect x="52" y="282" width="74" height="52" rx="18" />
+  </g>
+</svg>

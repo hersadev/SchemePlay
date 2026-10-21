@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["ES2023"],
+    "module": "ESNext",
+    "skipLibCheck": true,
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "isolatedModules": true,
+    "moduleDetection": "force",
+    "noEmit": true,
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "types": ["node"]
+  },
+  // Las pruebas entran aquí y no en tsconfig.app.json porque necesitan los
+  // tipos de Node (`node:test`, `node:assert`) y no los del navegador.
+  "include": ["vite.config.ts", "scripts/**/*.mjs", "pruebas/**/*.ts"]
+}

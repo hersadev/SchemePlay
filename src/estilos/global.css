@@ -1,0 +1,106 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+ * Tinta sobre papel frío. El neutro tiene un sesgo azul deliberado para que
+ * case con el azul tinta del acento; un gris puro al lado de este azul se ve
+ * sucio. El ocre está reservado a lo que mide estudio (estado del tema,
+ * avisos de copia de seguridad) y no se usa como acento general.
+ *
+ * El tema se resuelve en tres estados: sin marca en la raíz manda el sistema,
+ * y `data-theme` permite forzarlo en los dos sentidos. Ningún color se define
+ * solo dentro de un @media, o en el estado sin marcar quedaría sin valor.
+ */
+:root {
+  --fondo: #f4f6f9;
+  --lamina: #ffffff;
+  --hundido: #edf1f6;
+  --tinta: #151a23;
+  --suave: #5d6578;
+  --tenue: #8b93a5;
+  --linea: #dce2eb;
+  --acento: #27418c;
+  --acento-suave: #e6ebf7;
+  --estudio: #8f5a12;
+  --estudio-suave: #f6eedf;
+  --bien: #2a6349;
+  --mal: #a33a3a;
+
+  color-scheme: light dark;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --fondo: #101318;
+    --lamina: #171b22;
+    --hundido: #1c212a;
+    --tinta: #e7ebf2;
+    --suave: #9aa3b5;
+    --tenue: #6e7789;
+    --linea: #272d38;
+    --acento: #8ca6f0;
+    --acento-suave: #1b2335;
+    --estudio: #d7a355;
+    --estudio-suave: #2a2317;
+    --bien: #74bb97;
+    --mal: #e07c7c;
+  }
+}
+
+:root[data-theme='dark'] {
+  --fondo: #101318;
+  --lamina: #171b22;
+  --hundido: #1c212a;
+  --tinta: #e7ebf2;
+  --suave: #9aa3b5;
+  --tenue: #6e7789;
+  --linea: #272d38;
+  --acento: #8ca6f0;
+  --acento-suave: #1b2335;
+  --estudio: #d7a355;
+  --estudio-suave: #2a2317;
+  --bien: #74bb97;
+  --mal: #e07c7c;
+}
+
+html,
+body,
+#raiz {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--fondo);
+  color: var(--tinta);
+  font-family: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  /* Sin esto, arrastrar el lienzo en iOS rebota la página entera. */
+  overscroll-behavior: none;
+}
+
+/*
+ * Con dedo no hay hover: las acciones de cada fila de la biblioteca tienen que
+ * estar siempre visibles o serían inalcanzables en el iPad.
+ */
+@media (pointer: coarse) {
+  .acciones-fila {
+    opacity: 1 !important;
+  }
+}
+
+/* El lienzo ya gestiona sus propios gestos; que el navegador no interfiera. */
+[role='application'] {
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}

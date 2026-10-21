@@ -1,0 +1,1232 @@
+<title>SchemePlay — Esquema de la aplicación</title>
+
+<style>
+  :root {
+    --ground: #F4F6F9;
+    --surface: #FFFFFF;
+    --surface-sunk: #EDF1F6;
+    --ink: #151A23;
+    --ink-soft: #5D6578;
+    --ink-faint: #8B93A5;
+    --line: #DCE2EB;
+    --line-soft: #E8EDF3;
+    --accent: #27418C;
+    --accent-soft: #E6EBF7;
+    --study: #8F5A12;
+    --study-soft: #F6EEDF;
+    --ok: #2A6349;
+
+    --serif: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", "Hoefler Text", Georgia, serif;
+    --sans: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --mono: ui-monospace, "SF Mono", "Cascadia Mono", Menlo, Consolas, monospace;
+
+    --measure: 68ch;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ground: #101318;
+      --surface: #171B22;
+      --surface-sunk: #1C212A;
+      --ink: #E7EBF2;
+      --ink-soft: #9AA3B5;
+      --ink-faint: #6E7789;
+      --line: #272D38;
+      --line-soft: #202630;
+      --accent: #8CA6F0;
+      --accent-soft: #1B2335;
+      --study: #D7A355;
+      --study-soft: #2A2317;
+      --ok: #74BB97;
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --ground: #101318;
+    --surface: #171B22;
+    --surface-sunk: #1C212A;
+    --ink: #E7EBF2;
+    --ink-soft: #9AA3B5;
+    --ink-faint: #6E7789;
+    --line: #272D38;
+    --line-soft: #202630;
+    --accent: #8CA6F0;
+    --accent-soft: #1B2335;
+    --study: #D7A355;
+    --study-soft: #2A2317;
+    --ok: #74BB97;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    background: var(--ground);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 16.5px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+    margin: 0;
+  }
+
+  .page {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0;
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 0 clamp(1.1rem, 4vw, 3rem) 6rem;
+  }
+
+  @media (min-width: 1040px) {
+    .page {
+      grid-template-columns: 13rem minmax(0, 1fr);
+      column-gap: 3.5rem;
+    }
+    .masthead { grid-column: 1 / -1; }
+    .toc { display: block; }
+  }
+
+  /* ---------- masthead ---------- */
+
+  .masthead {
+    padding: clamp(3rem, 8vw, 5.5rem) 0 2.5rem;
+    border-bottom: 1px solid var(--line);
+    margin-bottom: 3.5rem;
+  }
+
+  .eyebrow {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin: 0 0 1.4rem;
+  }
+
+  h1 {
+    font-family: var(--serif);
+    font-weight: 600;
+    font-size: clamp(2.3rem, 6vw, 3.6rem);
+    line-height: 1.04;
+    letter-spacing: -0.015em;
+    text-wrap: balance;
+    margin: 0 0 1.1rem;
+  }
+
+  .standfirst {
+    max-width: var(--measure);
+    font-size: 1.1rem;
+    color: var(--ink-soft);
+    margin: 0 0 2rem;
+  }
+
+  .targets {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .targets li {
+    font-family: var(--mono);
+    font-size: 0.78rem;
+    letter-spacing: 0.02em;
+    padding: 0.3rem 0.65rem;
+    border: 1px solid var(--line);
+    border-radius: 2px;
+    background: var(--surface);
+    color: var(--ink-soft);
+  }
+
+  /* ---------- toc ---------- */
+
+  .toc { display: none; }
+
+  .toc nav {
+    position: sticky;
+    top: 2.5rem;
+    font-size: 0.86rem;
+  }
+
+  .toc ol {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+    counter-reset: toc;
+  }
+
+  .toc a {
+    color: var(--ink-soft);
+    text-decoration: none;
+    display: block;
+    border-left: 2px solid var(--line);
+    padding-left: 0.75rem;
+    line-height: 1.35;
+  }
+
+  .toc a::before {
+    counter-increment: toc;
+    content: counter(toc) " ";
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    color: var(--ink-faint);
+  }
+
+  .toc a:hover,
+  .toc a:focus-visible {
+    color: var(--accent);
+    border-left-color: var(--accent);
+  }
+
+  /* ---------- sections ---------- */
+
+  .body > section {
+    padding-bottom: 3.75rem;
+  }
+
+  .body > section + section {
+    border-top: 1px solid var(--line-soft);
+    padding-top: 3.25rem;
+  }
+
+  h2 {
+    font-family: var(--serif);
+    font-weight: 600;
+    font-size: clamp(1.55rem, 3.2vw, 2rem);
+    line-height: 1.15;
+    letter-spacing: -0.01em;
+    text-wrap: balance;
+    margin: 0 0 1.1rem;
+    display: flex;
+    gap: 0.85rem;
+    align-items: baseline;
+  }
+
+  h2 .num {
+    font-family: var(--mono);
+    font-size: 0.78rem;
+    font-weight: 400;
+    letter-spacing: 0.08em;
+    color: var(--accent);
+    flex: none;
+    transform: translateY(-0.15em);
+  }
+
+  h3 {
+    font-family: var(--sans);
+    font-weight: 650;
+    font-size: 0.78rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    margin: 2.5rem 0 0.9rem;
+  }
+
+  p, .body ul, .body ol {
+    max-width: var(--measure);
+  }
+
+  p { margin: 0 0 1.1rem; }
+
+  .body > section > ul,
+  .body > section > ol {
+    padding-left: 1.2rem;
+    margin: 0 0 1.2rem;
+  }
+
+  .body li + li { margin-top: 0.45rem; }
+
+  a { color: var(--accent); text-underline-offset: 0.2em; }
+
+  code {
+    font-family: var(--mono);
+    font-size: 0.85em;
+    background: var(--surface-sunk);
+    border-radius: 2px;
+    padding: 0.1em 0.34em;
+  }
+
+  strong { font-weight: 650; }
+
+  kbd {
+    font-family: var(--mono);
+    font-size: 0.78em;
+    border: 1px solid var(--line);
+    border-bottom-width: 2px;
+    border-radius: 3px;
+    background: var(--surface);
+    padding: 0.12em 0.4em;
+    white-space: nowrap;
+    color: var(--ink);
+  }
+
+  /* ---------- wide blocks ---------- */
+
+  .wide {
+    overflow-x: auto;
+    margin: 0 0 1.5rem;
+    border: 1px solid var(--line);
+    background: var(--surface);
+  }
+
+  pre {
+    font-family: var(--mono);
+    font-size: 0.8rem;
+    line-height: 1.6;
+    margin: 0;
+    padding: 1.4rem 1.5rem;
+    color: var(--ink-soft);
+    tab-size: 2;
+  }
+
+  pre b { color: var(--ink); font-weight: 600; }
+  pre i { color: var(--ink-faint); font-style: normal; }
+  pre em { color: var(--accent); font-style: normal; }
+
+  figure { margin: 0 0 1.75rem; }
+
+  figcaption {
+    font-size: 0.8rem;
+    color: var(--ink-faint);
+    margin-top: 0.6rem;
+    max-width: var(--measure);
+  }
+
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    min-width: 34rem;
+    font-size: 0.92rem;
+    font-variant-numeric: tabular-nums;
+  }
+
+  thead th {
+    text-align: left;
+    font-size: 0.72rem;
+    font-weight: 650;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    padding: 0.85rem 1.1rem;
+    border-bottom: 1px solid var(--line);
+    white-space: nowrap;
+  }
+
+  tbody td {
+    padding: 0.8rem 1.1rem;
+    border-bottom: 1px solid var(--line-soft);
+    vertical-align: top;
+  }
+
+  tbody tr:last-child td { border-bottom: 0; }
+
+  tbody th {
+    text-align: left;
+    font-weight: 650;
+    padding: 0.8rem 1.1rem;
+    border-bottom: 1px solid var(--line-soft);
+    vertical-align: top;
+    white-space: nowrap;
+  }
+
+  tbody tr:last-child th { border-bottom: 0; }
+
+  td.keys { white-space: nowrap; }
+
+  /* ---------- callout ---------- */
+
+  .callout {
+    border: 1px solid var(--line);
+    border-left: 3px solid var(--accent);
+    background: var(--surface);
+    padding: 1.4rem 1.6rem;
+    margin: 0 0 1.75rem;
+    max-width: var(--measure);
+  }
+
+  .callout.pending { border-left-color: var(--study); }
+
+  .callout p:last-child { margin-bottom: 0; }
+
+  .callout .label {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    display: block;
+    margin-bottom: 0.6rem;
+  }
+
+  .callout.pending .label { color: var(--study); }
+
+  .callout .verdict {
+    font-family: var(--serif);
+    font-size: 1.3rem;
+    line-height: 1.3;
+    margin: 0 0 0.8rem;
+    text-wrap: balance;
+  }
+
+  /* ---------- hierarchy ---------- */
+
+  .hierarchy {
+    list-style: none;
+    margin: 0 0 1.75rem;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    max-width: 44rem;
+  }
+
+  .hierarchy li {
+    display: flex;
+    align-items: baseline;
+    gap: 0.9rem;
+    padding: 0.7rem 1rem;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    margin-top: 0 !important;
+  }
+
+  .hierarchy li:nth-child(2) { margin-left: 1.5rem; }
+  .hierarchy li:nth-child(3) { margin-left: 3rem; }
+  .hierarchy li:nth-child(4) { margin-left: 4.5rem; }
+  .hierarchy li:nth-child(5) { margin-left: 6rem; }
+
+  .hierarchy .tier {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent);
+    flex: none;
+    min-width: 5.2rem;
+  }
+
+  .hierarchy .gloss { color: var(--ink-soft); font-size: 0.9rem; }
+
+  /* ---------- study modes ---------- */
+
+  .modes {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 1.75rem;
+    display: grid;
+    gap: 0.75rem;
+    max-width: 46rem;
+    counter-reset: mode;
+  }
+
+  .modes li {
+    background: var(--study-soft);
+    border: 1px solid var(--line);
+    padding: 1rem 1.2rem;
+    display: grid;
+    grid-template-columns: 1.8rem 1fr;
+    gap: 0.4rem 0.9rem;
+    margin-top: 0 !important;
+  }
+
+  .modes li::before {
+    counter-increment: mode;
+    content: counter(mode);
+    font-family: var(--mono);
+    font-size: 0.78rem;
+    color: var(--study);
+    grid-row: 1 / span 2;
+    padding-top: 0.22rem;
+  }
+
+  .modes b { font-weight: 650; }
+  .modes span { color: var(--ink-soft); font-size: 0.93rem; grid-column: 2; }
+
+  /* ---------- phase table emphasis ---------- */
+
+  .phase-num {
+    font-family: var(--mono);
+    font-size: 0.9rem;
+    color: var(--accent);
+  }
+
+  tr.milestone td,
+  tr.milestone th { background: var(--accent-soft); }
+
+  .footnote {
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+    max-width: var(--measure);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; animation: none !important; }
+  }
+</style>
+
+<div class="page">
+
+  <header class="masthead">
+    <p class="eyebrow">Esquema de aplicación · 21 octubre 2026</p>
+    <h1>SchemePlay</h1>
+    <p class="standfirst">
+      Mapas mentales para preparar oposición, organizados por bloques y temas, creados
+      dentro de la propia app. App web instalable, así que da igual el sistema
+      operativo. Sin backend, sin cuenta y sin tráfico de datos: tu temario vive en el
+      dispositivo y viaja en un fichero que al importarse fusiona, no sustituye.
+    </p>
+    <ul class="targets">
+      <li>app web / PWA</li>
+      <li>macOS</li>
+      <li>iPadOS</li>
+      <li>Windows</li>
+      <li>sin cuenta</li>
+      <li>sin backend</li>
+    </ul>
+  </header>
+
+  <div class="toc">
+    <nav aria-label="Secciones">
+      <ol>
+        <li><a href="#plataforma">Plataforma y distribución</a></li>
+        <li><a href="#datos">Modelo de datos</a></li>
+        <li><a href="#pantallas">Pantallas</a></li>
+        <li><a href="#editor">Interacción del editor</a></li>
+        <li><a href="#estudio">Modo estudio</a></li>
+        <li><a href="#sync">Trasvase sin servidor</a></li>
+        <li><a href="#ficheros">Árbol de ficheros</a></li>
+        <li><a href="#fases">Fases</a></li>
+        <li><a href="#riesgos">Riesgos</a></li>
+        <li><a href="#pendiente">Decisión pendiente</a></li>
+      </ol>
+    </nav>
+  </div>
+
+  <main class="body">
+
+    <section id="plataforma">
+      <h2><span class="num">01</span> Plataforma y distribución</h2>
+
+      <p>
+        El requisito duro es iPad más Windows más Mac. Eso descarta Electron, que no
+        tiene iOS, y hace cuesta arriba React Native: el lienzo con pan, zoom y
+        cientos de nodos se sufre.
+      </p>
+
+      <div class="callout">
+        <span class="label">Recomendación</span>
+        <p class="verdict">PWA primero, con React + Vite + TypeScript.</p>
+        <p>
+          Escribes el editor una vez. Tauri 2 y Capacitor reempaquetan el mismo
+          <code>dist/</code> sin reescribir nada, así que «¿necesito app nativa de
+          verdad?» se puede responder en la fase 6 sin coste.
+        </p>
+      </div>
+
+      <div class="wide">
+        <table>
+          <thead>
+            <tr><th>Plataforma</th><th>Cómo se instala</th><th>Nativo, opcional y nunca necesario</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th>iPad / iPhone</th>
+              <td>Safari → «Añadir a pantalla de inicio». Pantalla completa y sin conexión</td>
+              <td>Envolver con <strong>Capacitor</strong>, si quieres App Store</td>
+            </tr>
+            <tr>
+              <th>Windows</th>
+              <td>Edge o Chrome → «Instalar app». Ventana e icono propios</td>
+              <td><strong>Tauri 2</strong>, si quieres un <code>.msi</code> firmado</td>
+            </tr>
+            <tr>
+              <th>macOS</th>
+              <td>Igual que Windows</td>
+              <td><strong>Tauri 2</strong>: binario de unos 5 MB del mismo código web</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Stack</h3>
+
+      <div class="wide">
+        <table>
+          <thead>
+            <tr><th>Capa</th><th>Elección</th><th>Motivo</th></tr>
+          </thead>
+          <tbody>
+            <tr><th>UI</th><td>React 18 + TypeScript + Vite</td><td>Lo que ya usas en JSPlay y WriteXP</td></tr>
+            <tr><th>Lienzo</th><td><code>@xyflow/react</code> (React Flow 12)</td><td>Pan, zoom y táctil ya resueltos; nodos propios y minimapa</td></tr>
+            <tr><th>Layout</th><td><code>d3-hierarchy</code></td><td>Un mapa mental es un árbol: layout horizontal o radial determinista</td></tr>
+            <tr><th>Estado</th><td>Zustand + Immer</td><td>Editar el árbol sin boilerplate; ya lo conoces</td></tr>
+            <tr><th>Persistencia</th><td>Dexie (IndexedDB)</td><td>Única fuente de verdad; offline real en los tres sistemas</td></tr>
+            <tr><th>Trasvase</th><td>Fichero <code>.schemeplay.json</code> y motor de fusión propio</td><td>Sin servidor ni cuenta; ver sección 06</td></tr>
+            <tr><th>Orden</th><td><code>fractional-indexing</code></td><td>Insertar entre dos nodos toca una sola fila</td></tr>
+            <tr><th>Estilos</th><td>Tailwind</td><td>Igual que JSPlay</td></tr>
+            <tr><th>Exportar</th><td><code>html-to-image</code>, <code>jsPDF</code>, serializador propio</td><td>PNG, PDF, Markdown y OPML</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p class="footnote">
+        <strong>Lo que no lleva:</strong> ni backend, ni autenticación, ni cliente HTTP,
+        ni WebSockets. No hay nada que registrar, ni datos personales, ni término de
+        servicio que cumplir.
+      </p>
+
+      <h3>Cómo llega la app a cada dispositivo</h3>
+
+      <p>
+        Sí, es una app web: React compilado a HTML, JS y CSS. Eso es exactamente lo que
+        la hace independiente del sistema operativo. Pero una app web tiene que servirse
+        desde alguna URL, y conviene separar dos cosas que suenan parecidas.
+      </p>
+
+      <div class="wide">
+        <table>
+          <thead>
+            <tr><th></th><th>Qué viaja</th><th>Dónde vive</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th>El código de la app</th>
+              <td>HTML, JS y CSS. Ni un dato tuyo</td>
+              <td>Hosting estático</td>
+            </tr>
+            <tr>
+              <th>Tu temario</th>
+              <td>Nada. No sale del dispositivo salvo que tú exportes</td>
+              <td>IndexedDB de cada dispositivo</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout">
+        <span class="label">La distinción que importa</span>
+        <p class="verdict">Subir el código no es subir tus esquemas.</p>
+        <p>
+          El hosting es un servidor de ficheros estáticos: no hay base de datos detrás ni
+          nada a lo que mandar nada. <strong>Cloudflare Pages o GitHub Pages</strong>:
+          gratis, se despliega con un <code>git push</code> y trae HTTPS, obligatorio
+          para que funcione el service worker y, con él, el modo sin conexión. Visitas la
+          URL una vez en cada dispositivo, le das a «instalar» y desde entonces arranca
+          sin red.
+        </p>
+      </div>
+
+      <p>Descartadas:</p>
+
+      <ul>
+        <li>
+          <strong>Abrir el <code>index.html</code> con <code>file://</code></strong> —
+          sin service worker no hay PWA ni modo offline, y el origen opaco hace que
+          IndexedDB se comporte de forma inconsistente entre navegadores.
+        </li>
+        <li>
+          <strong><code>npm run dev</code> en cada máquina</strong> — impracticable en un
+          iPad.
+        </li>
+      </ul>
+
+      <p class="footnote">
+        Si te incomoda que la URL sea pública: en el código no hay nada sensible, pero
+        Cloudflare Access permite cerrar el sitio a tu propio correo en dos clics.
+      </p>
+    </section>
+
+    <section id="datos">
+      <h2><span class="num">02</span> Modelo de datos</h2>
+
+      <p>Cuatro niveles de jerarquía y, dentro, el árbol de nodos.</p>
+
+      <ul class="hierarchy">
+        <li><span class="tier">Oposición</span><span class="gloss">opcional; si solo preparas una, queda implícita</span></li>
+        <li><span class="tier">Bloque</span><span class="gloss">«Bloque I — Organización del Estado»</span></li>
+        <li><span class="tier">Tema</span><span class="gloss">«Tema 3 — La Constitución de 1978»</span></li>
+        <li><span class="tier">Esquema</span><span class="gloss">un mapa mental; un tema puede tener varios</span></li>
+        <li><span class="tier">Nodo</span><span class="gloss">árbol de nodos, con texto, notas y confianza</span></li>
+      </ul>
+
+      <h3>Tablas, idénticas en Dexie y en Postgres</h3>
+
+      <figure>
+        <div class="wide">
+<pre><i>// Las cuatro tablas comparten lo que hace posible la fusión.</i>
+<i>// Sin estos tres campos, importar solo podría sustituir.</i>
+type <b>Fusionable</b> = {
+  version: number        <i>// sube en cada edición local; manda sobre la fecha</i>
+  actualizadoEn: number  <i>// solo para deshacer empates de version</i>
+  borrado?: boolean      <i>// tombstone; nunca se hace DELETE de verdad</i>
+}
+
+type <b>Bloque</b> = Fusionable &amp; { id: string; nombre: string; color: string; orden: number }
+
+type <b>Tema</b> = Fusionable &amp; {
+  id: string
+  bloqueId: string
+  nombre: string
+  numero?: string          <i>// «Tema 3»</i>
+  orden: number
+  estado: <em>'sin-empezar' | 'en-curso' | 'repasando' | 'dominado'</em>
+}
+
+type <b>Esquema</b> = Fusionable &amp; {
+  id: string
+  temaId: string
+  titulo: string
+  nodoRaizId: string
+  layout: <em>'horizontal' | 'radial' | 'libre'</em>
+}
+
+type <b>Nodo</b> = Fusionable &amp; {
+  id: string
+  esquemaId: string
+  padreId: string | null   <i>// null = raíz</i>
+  texto: string            <i>// título corto, se edita en el propio nodo</i>
+  notas?: string           <i>// cuerpo largo en Markdown</i>
+  orden: string            <i>// índice fraccionario: "a0", "a0V", "a1"</i>
+  colapsado: boolean
+  color?: string           <i>// vacío = hereda del padre</i>
+  icono?: string
+  confianza?: <em>0 | 1 | 2 | 3 | 4 | 5</em>   <i>// alimenta el repaso espaciado</i>
+  repasarEn?: number       <i>// próxima revisión</i>
+}
+
+type <b>Etiqueta</b>     = { id: string; nombre: string; color: string }
+type <b>NodoEtiqueta</b> = { nodoId: string; etiquetaId: string }</pre>
+        </div>
+      </figure>
+
+      <h3>Las dos decisiones que importan</h3>
+
+      <ol>
+        <li>
+          <strong>Nodos planos con <code>padreId</code></strong>, no JSON anidado.
+          Permite fusionar nodo a nodo al importar, de forma que un conflicto afecta a
+          un nodo y no al mapa entero; buscar con un solo índice; y reordenar sin
+          reescribir a los hermanos.
+        </li>
+        <li>
+          <strong><code>orden</code> como índice fraccionario</strong> —una cadena
+          tipo <code>a0</code>, <code>a0V</code>, <code>a1</code>— en vez de entero.
+          Insertar entre dos hermanos toca una fila, no N. Librería:
+          <code>fractional-indexing</code>.
+        </li>
+      </ol>
+
+      <h3>Índices de Dexie</h3>
+
+      <div class="wide">
+<pre>bloques    id, orden, actualizadoEn
+temas      id, bloqueId, orden, estado, actualizadoEn
+esquemas   id, temaId, actualizadoEn
+nodos      id, esquemaId, <b>[esquemaId+padreId]</b>, repasarEn, actualizadoEn
+instantaneas  id, tomadaEn   <i>// copias previas a cada importación</i></pre>
+      </div>
+      <p class="footnote">
+        El índice compuesto <code>[esquemaId+padreId]</code> es el que carga los hijos
+        de un nodo al desplegar una rama sin recorrer la tabla.
+      </p>
+
+      <p class="footnote">
+        A esas cuatro se añade <code>instantaneas</code>: copias completas de la base
+        tomadas justo antes de cada importación, para que deshacerla sea un botón.
+      </p>
+    </section>
+
+    <section id="pantallas">
+      <h2><span class="num">03</span> Pantallas</h2>
+
+      <figure>
+        <div class="wide">
+<pre>┌───────────────┬──────────────────────────────────┬──────────────┐
+│ <b>BIBLIOTECA</b>    │            <b>LIENZO</b>                │ <b>INSPECTOR</b>    │
+│               │                                  │              │
+│ 🔍 buscar     │        ┌─────────┐               │ Nodo         │
+│               │   ┌────┤  Tema 3 ├────┐          │ ─────────    │
+│ ▼ Bloque I    │   │    └─────────┘    │          │ Texto        │
+│   · Tema 1 ✓  │ ┌─┴──┐           ┌────┴─┐        │ Notas (md)   │
+│   · Tema 2 ◐  │ │Art.│           │Título│        │ Color        │
+│   · Tema 3 ●  │ └────┘           │  II  │        │ Etiquetas    │
+│ ▶ Bloque II   │                  └──────┘        │ Confianza    │
+│ ▶ Bloque III  │                                  │              │
+│               │  [+] [layout] [estudio] [export] │              │
+│ ⚙ Ajustes     │                                  │              │
+└───────────────┴──────────────────────────────────┴──────────────┘</pre>
+        </div>
+        <figcaption>
+          Mac y Windows: los tres paneles a la vez, redimensionables. iPad horizontal:
+          los tres, con el inspector solapándose al editar. iPad vertical y móvil: solo
+          lienzo, biblioteca en cajón deslizante e inspector en hoja inferior.
+        </figcaption>
+      </figure>
+
+      <h3>Rutas</h3>
+
+      <div class="wide">
+<pre><b>/</b>                        panel de bloques y progreso general
+<b>/bloque/:id</b>              temas del bloque
+<b>/tema/:id</b>                esquemas del tema
+<b>/esquema/:id</b>             editor de mapa mental
+<b>/esquema/:id/estudio</b>     modo estudio
+<b>/repaso</b>                  cola de repaso espaciado de hoy
+<b>/ajustes</b>                 cuenta, sync, exportación, copias</pre>
+      </div>
+    </section>
+
+    <section id="editor">
+      <h2><span class="num">04</span> Interacción del editor</h2>
+
+      <p>
+        Esto decide si la app se usa o se abandona: crear un esquema tiene que ir más
+        rápido que escribirlo en papel.
+      </p>
+
+      <h3>Teclado en Mac y Windows — modelo de outliner</h3>
+
+      <div class="wide">
+        <table>
+          <thead><tr><th>Tecla</th><th>Acción</th></tr></thead>
+          <tbody>
+            <tr><td class="keys"><kbd>Tab</kbd></td><td>Crear nodo <strong>hijo</strong> del seleccionado</td></tr>
+            <tr><td class="keys"><kbd>Enter</kbd></td><td>Crear nodo <strong>hermano</strong> debajo</td></tr>
+            <tr><td class="keys"><kbd>Shift</kbd> <kbd>Tab</kbd></td><td>Sacar el nodo un nivel: pasa a ser hermano del padre</td></tr>
+            <tr><td class="keys"><kbd>↑</kbd> <kbd>↓</kbd> <kbd>←</kbd> <kbd>→</kbd></td><td>Navegar por el árbol</td></tr>
+            <tr><td class="keys"><kbd>Espacio</kbd></td><td>Plegar o desplegar la rama</td></tr>
+            <tr><td class="keys"><kbd>Cmd/Ctrl</kbd> <kbd>Enter</kbd></td><td>Abrir las notas largas del nodo</td></tr>
+            <tr><td class="keys"><kbd>Cmd/Ctrl</kbd> <kbd>K</kbd></td><td>Paleta de comandos: saltar a un tema, color, etiqueta</td></tr>
+            <tr><td class="keys"><kbd>Supr</kbd></td><td>Borrar nodo y descendientes, con deshacer</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>
+        El foco nunca sale del lienzo: el texto del nodo se escribe en el nodo, no en
+        un formulario aparte.
+      </p>
+
+      <h3>Táctil en iPad</h3>
+
+      <ul>
+        <li>Tocar un nodo saca tiradores <code>+</code> a los lados para crear hijo o hermano.</li>
+        <li>Pulsación larga y arrastrar reasigna el padre; la rama de destino se ilumina.</li>
+        <li>Dos dedos para desplazar, pinza para zoom, doble toque para ajustar a pantalla.</li>
+        <li>
+          Apple Pencil: capa opcional de anotación a mano alzada <strong>encima</strong>
+          del mapa, guardada como trazos aparte para que no deforme el árbol.
+        </li>
+      </ul>
+
+      <h3>Deshacer</h3>
+
+      <p>
+        Pila de comandos propia —<code>crearNodo</code>, <code>moverNodo</code>,
+        <code>editarTexto</code>— con deshacer y rehacer, no diffs de estado. Es lo
+        único que aguanta un editor de árboles sin corromper el orden fraccionario.
+      </p>
+    </section>
+
+    <section id="estudio">
+      <h2><span class="num">05</span> Modo estudio</h2>
+
+      <p>
+        Lo que separa esto de un mapa mental genérico: el esquema no es el producto
+        final, es el material de repaso.
+      </p>
+
+      <ol class="modes">
+        <li><b>Revelado progresivo</b><span>Todo plegado. Vas abriendo ramas intentando recordar antes qué había debajo.</span></li>
+        <li><b>Hojas tapadas</b><span>Se ven las ramas, pero los nodos finales están cubiertos; los destapas uno a uno.</span></li>
+        <li><b>Recitar el tema</b><span>El mapa se oculta y solo queda la raíz. Reconstruyes el esquema de memoria y luego comparas.</span></li>
+        <li><b>Repaso espaciado</b><span>Cada nodo recibe una confianza de 1 a 5 y un SM-2 simplificado calcula <code>repasarEn</code>. La ruta <code>/repaso</code> junta lo que toca hoy, mezclando temas de bloques distintos.</span></li>
+        <li><b>Progreso</b><span>Porcentaje de nodos dominados por tema y por bloque, en el panel inicial. El <code>estado</code> del tema se deduce de ahí, no se marca a mano.</span></li>
+      </ol>
+    </section>
+
+    <section id="sync">
+      <h2><span class="num">06</span> Trasvase entre dispositivos, sin servidor</h2>
+
+      <p>
+        No hay cuenta, no hay servidor y la app no contiene código de red. Lo que mueve
+        la información de un dispositivo a otro es <strong>un fichero</strong>.
+      </p>
+
+      <div class="callout">
+        <span class="label">La parte delicada no es exportar</span>
+        <p class="verdict">Importar significa fusionar, no sustituir.</p>
+        <p>
+          Si la importación reemplaza la base local, cada trasvase se come lo que
+          hubieras hecho en ese dispositivo mientras tanto. Toda la sección existe para
+          que eso no pueda pasar.
+        </p>
+      </div>
+
+      <h3>El fichero</h3>
+
+      <figure>
+        <div class="wide">
+<pre><b>oposicion-2026-10-21-ipad.schemeplay.json</b>
+
+{
+  "formato": 1,
+  "exportadoEn": 1761045600000,
+  "dispositivo": "ipad-de-juanjo",   <i>// id estable del primer arranque</i>
+  "alcance": "todo",                 <i>// o ["bloque:xxx", "tema:yyy"]</i>
+  "filas": {
+    "bloques":  [ … ],
+    "temas":    [ … ],
+    "esquemas": [ … ],
+    "nodos":    [ … ]
+  }
+}</pre>
+        </div>
+        <figcaption>
+          Texto plano, legible y comprimible, con <code>formato</code> versionado para
+          que un fichero de hoy se pueda seguir leyendo dentro de un año.
+        </figcaption>
+      </figure>
+
+      <h3>La fusión, fila por fila</h3>
+
+      <figure>
+        <div class="wide">
+<pre>Para cada fila entrante:
+
+  no existe en local         →  <em>insertar</em>
+  version entrante MAYOR     →  <em>sobrescribir la local</em>
+  version entrante MENOR     →  <i>ignorar</i>
+  empate de version          →  gana <b>actualizadoEn</b> más alto
+  empate total               →  <i>ignorar: son la misma edición</i>
+  borrado: true              →  marcar borrada en local, <b>sin DELETE</b></pre>
+        </div>
+        <figcaption>
+          <code>version</code> va antes que la fecha a propósito: los relojes del iPad y
+          del PC no coinciden y, ordenando solo por fecha, un reloj adelantado haría
+          ganar a una edición más vieja. El contador sube en cada edición local, así que
+          la cadena normal de importo → edito → exporto siempre resuelve bien.
+        </figcaption>
+      </figure>
+
+      <h3>Antes de cada importación</h3>
+
+      <ul>
+        <li>
+          <strong>Instantánea automática</strong> de toda la base local en IndexedDB. Se
+          conservan las 10 últimas, de modo que «Deshacer importación» es un botón y no
+          una reconstrucción a mano.
+        </li>
+        <li>
+          <strong>Previsualización</strong>: «se añaden 34 nodos, se actualizan 12, 2 en
+          conflicto (gana la versión del iPad)», con opción de cancelar.
+        </li>
+        <li>
+          <strong>Importación parcial</strong>: traer solo un bloque o un tema concreto,
+          útil para pasar un tema al iPad sin arrastrar el resto.
+        </li>
+      </ul>
+
+      <h3>Drive como mensajero</h3>
+
+      <p>
+        Exportar, subirlo a Drive, bajarlo y actualizar cuando quieras funciona
+        <strong>sin tocar una línea del motor de fusión</strong>. A <code>fusion.ts</code>
+        le da igual cómo haya llegado el fichero: solo mira las filas que trae.
+      </p>
+
+      <figure>
+        <div class="wide">
+<pre>   <b>Mac</b>                      <b>Drive</b>                     <b>iPad</b>
+    │                         │                         │
+    ├ Ajustes › Exportar      │                         │
+    │  baja el .json ─────────▶  <i>lo subes tú</i>            │
+    │                         │                         │
+    │                         │ ─── <i>lo descargas</i> ───▶│
+    │                         │                         ├ Ajustes › Importar
+    │                         │                         ├ previsualización
+    │                         │                         └ <em>fusionar  ✓</em></pre>
+        </div>
+        <figcaption>
+          En el iPad el circuito se cierra sin salir de la app: la app de Google Drive se
+          registra como proveedor en Archivos, así que el selector de
+          <code>&lt;input type="file"&gt;</code> ve Drive directamente, y el fichero
+          exportado se guarda en Archivos listo para subirlo. Lo mismo sirve para iCloud
+          Drive, OneDrive, Dropbox, AirDrop, un cable o un pendrive: Drive es solo el
+          mensajero y es intercambiable.
+        </figcaption>
+      </figure>
+
+      <h3>El salto opcional: la API de Drive</h3>
+
+      <p>
+        Si los cuatro toques de pantalla acaban cansando, el siguiente nivel es que la
+        app suba y baje ella misma un único fichero fijo, con permiso
+        <code>drive.file</code>, que da acceso <strong>solo</strong> a los ficheros que la
+        propia app crea. Dos botones: «Subir a Drive» y «Traer de Drive».
+      </p>
+
+      <p>Lo que cuesta, para decidirlo con los números delante:</p>
+
+      <ul>
+        <li>Proyecto en Google Cloud, pantalla de consentimiento OAuth y un client id.</li>
+        <li>
+          Con la app en estado «testing», el refresh token caduca cada 7 días: toca
+          volver a dar permiso cada semana. Para evitarlo hay que publicarla, y Google
+          revisa las apps que piden permisos de Drive.
+        </li>
+        <li>
+          Deja de ser una app sin red: entran un cliente HTTP y la gestión de tokens, lo
+          que contradice parte de lo que la hace simple.
+        </li>
+      </ul>
+
+      <p>Por eso el orden es: fase 4 manual, y la API solo si la molestia es real.</p>
+
+      <h3>Otro atajo, solo en escritorio</h3>
+
+      <p>
+        La <strong>File System Access API</strong> —Chrome y Edge en Mac y Windows, no
+        Safari— deja que la app recuerde el fichero: «Guardar» escribe encima del mismo
+        sin diálogo. Si ese fichero está en la carpeta local de Drive, el cliente de
+        escritorio lo sube solo. Son unas 40 líneas y no requiere OAuth.
+      </p>
+
+      <h3>Lo que no se puede olvidar</h3>
+
+      <ul>
+        <li>
+          Pedir <code>navigator.storage.persist()</code> en iOS. Safari desaloja la
+          IndexedDB de los sitios «poco usados» y sin eso puedes perder trabajo local.
+        </li>
+        <li>
+          Copia automática semanal a fichero, con aviso si hace más de N días que no
+          exportas. Sin servidor, la copia de seguridad es responsabilidad de la app.
+        </li>
+        <li>
+          Validar el fichero al importar —<code>formato</code>, esquema de filas,
+          <code>nodoRaizId</code> existente— y aplicarlo en una sola transacción de
+          Dexie: un JSON a medias no debe dejar la base inconsistente.
+        </li>
+      </ul>
+    </section>
+
+    <section id="ficheros">
+      <h2><span class="num">07</span> Árbol de ficheros</h2>
+
+      <div class="wide">
+<pre>SchemePlay/
+├── docs/<b>ESQUEMA.md</b>
+├── public/
+│   ├── manifest.webmanifest
+│   └── icons/
+├── src/
+│   ├── main.tsx
+│   ├── App.tsx
+│   ├── <b>rutas/</b>
+│   │   Panel · VistaBloque · VistaTema · EditorEsquema · ModoEstudio · ColaRepaso
+│   ├── <b>lienzo/</b>
+│   │   ├── Lienzo.tsx           <i>envoltorio de React Flow</i>
+│   │   ├── NodoMental.tsx       <i>nodo personalizado</i>
+│   │   ├── AristaMental.tsx     <i>conector curvo</i>
+│   │   ├── layout.ts            <i>d3-hierarchy → posiciones</i>
+│   │   └── gestos.ts            <i>táctil y Pencil</i>
+│   ├── <b>estado/</b>
+│   │   ├── almacenEsquema.ts    <i>Zustand: árbol en edición</i>
+│   │   ├── almacenBiblioteca.ts <i>bloques y temas</i>
+│   │   ├── comandos.ts          <i>deshacer / rehacer</i>
+│   │   └── selectores.ts
+│   ├── <b>datos/</b>
+│   │   ├── db.ts                <i>esquema Dexie</i>
+│   │   ├── tipos.ts
+│   │   ├── fusion.ts            <i>fusión fila por fila al importar</i>
+│   │   ├── instantaneas.ts      <i>copia previa + deshacer importación</i>
+│   │   ├── fichero.ts           <i>leer y escribir .schemeplay.json</i>
+│   │   └── orden.ts             <i>índices fraccionarios</i>
+│   ├── <b>estudio/</b>
+│   │   ├── sm2.ts               <i>repaso espaciado</i>
+│   │   └── progreso.ts
+│   ├── <b>exportar/</b>
+│   │   aPng · aPdf · aMarkdown · aJson   <i>aJson = fichero de trasvase y copia</i>
+│   ├── ui/                      <i>botones, hojas, cajones, paleta</i>
+│   └── estilos/global.css
+├── index.html
+├── vite.config.ts
+├── tailwind.config.js
+└── package.json
+
+<i>Más adelante, sin tocar src/:</i>
+├── src-tauri/                   <i>fase 6 — Windows y macOS nativos</i>
+└── ios/                         <i>fase 6 — Capacitor, si quieres App Store</i></pre>
+      </div>
+    </section>
+
+    <section id="fases">
+      <h2><span class="num">08</span> Fases</h2>
+
+      <div class="wide">
+        <table>
+          <thead>
+            <tr><th>Fase</th><th>Qué entrega</th><th>Resultado visible</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th><span class="phase-num">0</span></th>
+              <td>Vite, TS, Tailwind, rutas, manifest de PWA y despliegue a Cloudflare Pages</td>
+              <td>Ya la abres e instalas desde Mac, iPad y Windows, aún vacía</td>
+            </tr>
+            <tr>
+              <th><span class="phase-num">1</span></th>
+              <td>Lienzo con React Flow, nodo propio, layout d3, atajos, deshacer</td>
+              <td>Ya puedes dibujar un esquema, en memoria</td>
+            </tr>
+            <tr class="milestone">
+              <th><span class="phase-num">2</span></th>
+              <td>Dexie y CRUD de bloques, temas y esquemas; biblioteca y buscador</td>
+              <td><strong>Primera versión usable a diario</strong>, persistente y offline</td>
+            </tr>
+            <tr>
+              <th><span class="phase-num">3</span></th>
+              <td>Pulido táctil de iPad: gestos, tiradores, hoja inferior, cajón</td>
+              <td>Usable de verdad en iPad, no solo accesible</td>
+            </tr>
+            <tr class="milestone">
+              <th><span class="phase-num">4</span></th>
+              <td><code>fusion.ts</code>, exportar e importar fichero, previsualización, instantáneas y deshacer</td>
+              <td><strong>El mismo esquema en Mac, iPad y Windows</strong></td>
+            </tr>
+            <tr>
+              <th><span class="phase-num">5</span></th>
+              <td>Modo estudio, SM-2, cola de repaso, progreso por bloque</td>
+              <td>Deja de ser un editor y pasa a ser herramienta de estudio</td>
+            </tr>
+            <tr>
+              <th><span class="phase-num">6</span></th>
+              <td>Exportar a PNG, PDF y Markdown; File System Access en escritorio</td>
+              <td>Imprimir esquemas y guardar sin diálogo en Mac y Windows</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p class="footnote">
+        La fase 4 es la que cumple el requisito de los tres dispositivos y, sin backend,
+        cuesta bastante menos: es un fichero y una función de fusión bien probada. Fuera
+        de estas fases quedan, opcionales, la API de Drive y el empaquetado nativo con
+        Tauri y Capacitor: al ser una app web desplegada, lo nativo ya no aporta alcance,
+        solo comodidad de trasvase.
+      </p>
+    </section>
+
+    <section id="riesgos">
+      <h2><span class="num">09</span> Riesgos</h2>
+
+      <div class="wide">
+        <table>
+          <thead><tr><th>Riesgo</th><th>Mitigación</th></tr></thead>
+          <tbody>
+            <tr>
+              <th>Sin backend no hay copia: un iPad perdido se lleva el temario</th>
+              <td>Aviso en pantalla si hace más de N días que no exportas, más copia automática semanal a fichero</td>
+            </tr>
+            <tr>
+              <th>Cambiar de dominio deja los datos atrás: IndexedDB va atada al origen</th>
+              <td>Fijar la URL definitiva en la fase 0, antes de meter temario de verdad; si hay mudanza, exportar primero</td>
+            </tr>
+            <tr>
+              <th>Borrar los datos del sitio en el navegador borra el temario</th>
+              <td>Instalar como PWA, donde el almacenamiento es más persistente, más <code>storage.persist()</code> y la copia semanal</td>
+            </tr>
+            <tr>
+              <th>Importar pisa trabajo más reciente del destino</th>
+              <td>Fusión fila por fila, nunca sustitución; previsualización antes de aplicar; instantánea y «deshacer importación»</td>
+            </tr>
+            <tr>
+              <th>Relojes descuadrados invierten quién gana</th>
+              <td>Ordenar por <code>version</code> y usar <code>actualizadoEn</code> solo para empates</td>
+            </tr>
+            <tr>
+              <th>Un fichero a medias deja la base inconsistente</th>
+              <td>Validar <code>formato</code> y filas enteras antes de escribir; importar en una sola transacción de Dexie</td>
+            </tr>
+            <tr>
+              <th>Safari en iOS desaloja la IndexedDB</th>
+              <td><code>navigator.storage.persist()</code> y la copia semanal como respaldo</td>
+            </tr>
+            <tr>
+              <th>Esquemas de 500 nodos tiran el frame rate</th>
+              <td>React Flow con <code>onlyRenderVisibleElements</code>, layout memoizado, ramas plegadas por defecto</td>
+            </tr>
+            <tr>
+              <th>Reordenar hermanos corrompe el orden</th>
+              <td>Índices fraccionarios y test de propiedades sobre <code>orden.ts</code></td>
+            </tr>
+            <tr>
+              <th>El editor táctil queda peor que el de teclado</th>
+              <td>Fase 3 dedicada solo a iPad, con el iPad delante, y no dejada para el final</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="pendiente">
+      <h2><span class="num">10</span> Decisión pendiente</h2>
+
+      <div class="callout pending">
+        <span class="label">Tu respuesta hace falta en la fase 6, no antes</span>
+        <p class="verdict">¿Cuánto trabajo manual aceptas en cada trasvase?</p>
+        <p>
+          La fusión es la misma en los tres casos. Lo único que cambia es quién mueve el
+          fichero, y las fases 0 a 5 son idénticas, así que la decisión no bloquea nada.
+          Van de menos a más automático, y de menos a más dependencia de terceros.
+        </p>
+      </div>
+
+      <ol class="modes">
+        <li>
+          <b>A mano con Drive</b>
+          <span>
+            Exportas, lo subes a Drive, lo bajas en el otro dispositivo, importas. Cuatro
+            toques, cero infraestructura y ningún permiso concedido a nadie. Es lo que
+            tienes al acabar la fase 4, y es lo que has descrito tú.
+          </span>
+        </li>
+        <li>
+          <b>Semiautomático en escritorio</b>
+          <span>
+            File System Access API: en Mac y Windows la app escribe encima del mismo
+            fichero sin diálogo y, si está en la carpeta local de Drive, el cliente lo
+            sube solo. Unas 40 líneas, sin OAuth. En el iPad sigue siendo manual, porque
+            Safari no expone esa API.
+          </span>
+        </li>
+        <li>
+          <b>La app habla con Drive</b>
+          <span>
+            Permiso <code>drive.file</code> y dos botones. Lo más cómodo, y lo único que
+            mete red en una app que ahora no la tiene, además de un proyecto de Google
+            Cloud y un reconsentimiento semanal mientras esté en «testing».
+          </span>
+        </li>
+      </ol>
+
+      <p class="footnote">
+        Mi recomendación: empezar por la primera y añadir la segunda cuando tengas
+        temario de verdad dentro.
+      </p>
+    </section>
+
+  </main>
+</div>
