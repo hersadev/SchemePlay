@@ -22,6 +22,9 @@ El diseño completo, con las decisiones y por qué se tomaron, está en
 - **Teclado primero**: `Tab` crea rama hija, `Enter` crea nodo al mismo nivel,
   flechas navegan, `Espacio` pliega, `?` abre la lista de atajos. Cada atajo
   tiene además su botón, para el iPad.
+- **Acciones en el nodo**: al pasar el ratón (o al seleccionarlo, con el dedo)
+  salen tres botones pequeños encima para colgarle una rama hija, añadir un
+  nodo al mismo nivel o borrarlo.
 - **Mover nodos a mano**: arrastra uno y su rama entera le sigue. El
   desplazamiento se guarda como diferencia respecto al layout automático, así
   que el resto del mapa sigue colocándose solo y «Reorganizar» lo devuelve todo

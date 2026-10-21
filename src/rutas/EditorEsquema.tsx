@@ -69,7 +69,8 @@ export function EditorEsquema() {
           </Link>
 
           <Boton
-            className="h-9 shrink-0 px-3 text-xs"
+            tamano="pequeno"
+            className="shrink-0"
             onClick={() => void usarEsquema.getState().reorganizar()}
             title="Devolver los nodos movidos a su sitio automático"
           >
@@ -80,7 +81,8 @@ export function EditorEsquema() {
           <Boton
             icono
             variante="fantasma"
-            className="hidden h-9 w-9 shrink-0 lg:inline-flex"
+            tamano="pequeno"
+            className="hidden shrink-0 lg:inline-flex"
             onClick={() => setInspectorAnclado((v) => !v)}
             title={inspectorAnclado ? 'Ocultar el detalle' : 'Mostrar el detalle'}
             aria-label={inspectorAnclado ? 'Ocultar el detalle' : 'Mostrar el detalle'}
@@ -90,7 +92,8 @@ export function EditorEsquema() {
           </Boton>
 
           <Boton
-            className="h-9 shrink-0 px-3 text-xs lg:hidden"
+            tamano="pequeno"
+            className="shrink-0 lg:hidden"
             onClick={() => setVerInspector((v) => !v)}
           >
             {verInspector ? 'Ocultar notas' : 'Notas'}

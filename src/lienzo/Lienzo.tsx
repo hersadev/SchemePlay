@@ -287,6 +287,9 @@ export function Lienzo({ esquemaId, raizId }: Props) {
               escala={vista.k}
               alArrastrar={(id, dx, dy) => setArrastre({ id, dx, dy })}
               alSoltarArrastre={alSoltarArrastre}
+              alCrearHijo={(id) => void acciones.crearHijo(id)}
+              alCrearHermano={(id) => void acciones.crearHermano(id)}
+              alBorrar={(id) => void acciones.borrar(id)}
             />
           ))}
         </div>

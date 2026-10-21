@@ -174,7 +174,7 @@ export function ModoEstudio() {
             <Boton
               key={m.valor}
               variante={modo === m.valor ? 'solido' : 'suave'}
-              className="h-9 px-3 text-xs"
+              tamano="pequeno"
               onClick={() => setModo(m.valor)}
               title={m.explicacion}
               aria-pressed={modo === m.valor}
@@ -282,7 +282,7 @@ export function ModoEstudio() {
               <Boton
                 key={c.valor}
                 variante={c.valor === 5 ? 'solido' : 'suave'}
-                className="h-10 px-3 text-xs"
+                tamano="pequeno"
                 onClick={() => void valorar(c.valor)}
                 title={c.pista}
               >

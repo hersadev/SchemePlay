@@ -44,7 +44,8 @@ export function Inspector() {
         </p>
         <Boton
           variante="fantasma"
-          className="mt-1.5 h-8 px-2 text-xs"
+          tamano="pequeno"
+          className="mt-1.5"
           onClick={() => acc.empezarEdicion(nodo.id)}
         >
           Editar el texto
@@ -92,7 +93,7 @@ export function Inspector() {
             ))}
             <Boton
               variante="fantasma"
-              className="h-7 px-2 text-xs"
+              tamano="pequeno"
               disabled={!nodo.color}
               onClick={() => void acc.cambiarColor(nodo.id, undefined)}
             >

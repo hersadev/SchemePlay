@@ -1,12 +1,14 @@
 import type { ButtonHTMLAttributes, ReactNode } from 'react'
 
 type Variante = 'suave' | 'solido' | 'fantasma'
+type Tamano = 'normal' | 'pequeno'
 
 type Props = ButtonHTMLAttributes<HTMLButtonElement> & {
   children: ReactNode
   variante?: Variante
-  /** Botón de solo icono: cuadrado y con área táctil de 44 px. */
+  /** Botón de solo icono: cuadrado, sin padding horizontal. */
   icono?: boolean
+  tamano?: Tamano
 }
 
 const BASE =
@@ -23,9 +25,28 @@ const VARIANTES: Record<Variante, string> = {
     'border-transparent bg-transparent text-[var(--suave)] hover:bg-[var(--hundido)] hover:text-[var(--tinta)]',
 }
 
-export function Boton({ children, variante = 'suave', icono = false, className = '', ...resto }: Props) {
+/*
+ * El tamaño es una prop y no una clase que se pase desde fuera. Pasarla por
+ * `className` no funciona: ante `px-3.5` y `p-0`, Tailwind no resuelve por el
+ * orden del atributo sino por el orden en que emite el CSS, y gana `px-3.5`.
+ * Así es como los botones de la biblioteca acabaron con 4 px de hueco y el
+ * icono aplastado a 2 px de ancho, invisible en la práctica.
+ */
+const FORMAS: Record<Tamano, { icono: string; texto: string }> = {
   // 44 px de lado es el mínimo con el que un dedo acierta en el iPad.
-  const forma = icono ? 'h-11 w-11 p-0' : 'h-10 px-3.5'
+  normal: { icono: 'h-11 w-11 p-0', texto: 'h-10 px-3.5' },
+  pequeno: { icono: 'h-8 w-8 p-0', texto: 'h-8 px-2.5 text-xs' },
+}
+
+export function Boton({
+  children,
+  variante = 'suave',
+  icono = false,
+  tamano = 'normal',
+  className = '',
+  ...resto
+}: Props) {
+  const forma = FORMAS[tamano][icono ? 'icono' : 'texto']
   return (
     <button type="button" className={`${BASE} ${VARIANTES[variante]} ${forma} ${className}`} {...resto}>
       {children}

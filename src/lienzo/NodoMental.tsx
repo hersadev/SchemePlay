@@ -1,6 +1,7 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { estiloDe, FAMILIA } from './estilo'
 import type { Colocado } from './layout'
+import { IconoHermano, IconoHijo, IconoPapelera } from '../ui/iconos'
 
 /** Mezcla un hex de 6 dígitos con transparencia, sin salirse de la paleta. */
 function conAlfa(hex: string, alfa: number): string {
@@ -28,6 +29,10 @@ type Props = {
   escala: number
   alArrastrar: (id: string, dx: number, dy: number) => void
   alSoltarArrastre: () => void
+  /** Si no se pasan, el nodo no enseña acciones (modo estudio). */
+  alCrearHijo?: (id: string) => void
+  alCrearHermano?: (id: string) => void
+  alBorrar?: (id: string) => void
 }
 
 export function NodoMental({
@@ -45,7 +50,11 @@ export function NodoMental({
   escala,
   alArrastrar,
   alSoltarArrastre,
+  alCrearHijo,
+  alCrearHermano,
+  alBorrar,
 }: Props) {
+  const [raton, setRaton] = useState(false)
   const estilo = estiloDe(colocado.profundidad)
   const esRaiz = colocado.profundidad === 0
   const campo = useRef<HTMLTextAreaElement>(null)
@@ -98,6 +107,7 @@ export function NodoMental({
     if (a?.movido) alSoltarArrastre()
   }
 
+  const acciones = Boolean(alCrearHijo || alCrearHermano || alBorrar)
   const colorBorde = esRaiz ? 'transparent' : colocado.color
   const grosorBorde = esRaiz ? 0 : colocado.profundidad === 1 ? 2 : 1
 
@@ -108,6 +118,8 @@ export function NodoMental({
       onPointerMove={mover}
       onPointerUp={soltar}
       onPointerCancel={soltar}
+      onPointerEnter={() => setRaton(true)}
+      onPointerLeave={() => setRaton(false)}
       onDoubleClick={(e) => {
         e.stopPropagation()
         alEditar(colocado.id)
@@ -183,6 +195,63 @@ export function NodoMental({
         </span>
       )}
 
+      {/*
+        Acciones del nodo. Con ratón aparecen al pasar por encima; con dedo no
+        hay hover, así que salen también cuando el nodo está seleccionado.
+        El contraescalado las mantiene del mismo tamaño en pantalla: dentro del
+        lienzo, a un 40 % de zoom quedarían en ocho píxeles y serían
+        inservibles justo cuando más falta hacen.
+      */}
+      {acciones && (raton || seleccionado) && !editando && (
+        <div
+          style={{
+            position: 'absolute',
+            // Anclado por el borde inferior, justo encima del nodo: con `top`
+            // fijo, el contraescalado lo hacía crecer hacia dentro y tapaba el
+            // texto del propio nodo.
+            bottom: 'calc(100% + 5px)',
+            [colocado.lado === 'der' ? 'left' : 'right']: 0,
+            transform: `scale(${1 / Math.max(escala, 0.25)})`,
+            transformOrigin: colocado.lado === 'der' ? 'left bottom' : 'right bottom',
+            display: 'flex',
+            gap: 2,
+            padding: 2,
+            borderRadius: 7,
+            background: 'var(--lamina)',
+            border: '1px solid var(--linea)',
+            boxShadow: '0 1px 4px rgba(0,0,0,0.12)',
+          }}
+        >
+          {alCrearHijo && (
+            <AccionNodo
+              etiqueta="Añadir rama hija"
+              color={esRaiz ? 'var(--acento)' : colocado.color}
+              alPulsar={() => alCrearHijo(colocado.id)}
+            >
+              <IconoHijo tamano={13} />
+            </AccionNodo>
+          )}
+          {alCrearHermano && !esRaiz && (
+            <AccionNodo
+              etiqueta="Añadir nodo al mismo nivel"
+              color={colocado.color}
+              alPulsar={() => alCrearHermano(colocado.id)}
+            >
+              <IconoHermano tamano={13} />
+            </AccionNodo>
+          )}
+          {alBorrar && !esRaiz && (
+            <AccionNodo
+              etiqueta="Borrar esta rama"
+              color="var(--mal)"
+              alPulsar={() => alBorrar(colocado.id)}
+            >
+              <IconoPapelera tamano={13} />
+            </AccionNodo>
+          )}
+        </div>
+      )}
+
       {colocado.hijos > 0 && (
         <button
           type="button"
@@ -218,5 +287,47 @@ export function NodoMental({
         </button>
       )}
     </div>
+  )
+}
+
+/** Botón diminuto del grupo de acciones que flota sobre el nodo. */
+function AccionNodo({
+  etiqueta,
+  color,
+  alPulsar,
+  children,
+}: {
+  etiqueta: string
+  color: string
+  alPulsar: () => void
+  children: React.ReactNode
+}) {
+  return (
+    <button
+      type="button"
+      title={etiqueta}
+      aria-label={etiqueta}
+      // Sin esto, pulsar la acción arrancaría un arrastre del nodo.
+      onPointerDown={(e) => e.stopPropagation()}
+      onPointerUp={(e) => e.stopPropagation()}
+      onClick={(e) => {
+        e.stopPropagation()
+        alPulsar()
+      }}
+      style={{
+        display: 'grid',
+        placeItems: 'center',
+        width: 20,
+        height: 20,
+        padding: 0,
+        border: 'none',
+        borderRadius: 5,
+        background: 'transparent',
+        color,
+        cursor: 'pointer',
+      }}
+    >
+      {children}
+    </button>
   )
 }

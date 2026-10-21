@@ -257,7 +257,7 @@ export function Ajustes() {
                   <p className="font-mono text-[11px] text-[var(--tenue)]">{fecha(i.tomadaEn)}</p>
                 </div>
                 <Boton
-                  className="h-9 px-3 text-xs"
+                  tamano="pequeno"
                   onClick={() => {
                     if (confirm('Esto deja la base como estaba en ese momento. ¿Seguro?')) {
                       void restaurarInstantanea(i.id)
@@ -303,7 +303,7 @@ export function Ajustes() {
             </strong>
           </span>
           {!estado?.persistente && (
-            <Boton className="h-9 px-3 text-xs" onClick={() => void pedirAlmacenPersistente()}>
+            <Boton tamano="pequeno" onClick={() => void pedirAlmacenPersistente()}>
               Pedirlo
             </Boton>
           )}

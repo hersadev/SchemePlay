@@ -136,7 +136,8 @@ export function Biblioteca({ alNavegar }: { alNavegar?: () => void }) {
                   <div className="flex shrink-0 gap-0.5 text-[var(--tenue)]">
                     <Boton
                       variante="fantasma"
-                      className="h-8 w-8 p-0"
+                      icono
+                      tamano="pequeno"
                       onClick={() => {
                         setCreando(`tema:${bloque.id}`)
                         setAbiertos((p) => new Set(p).add(bloque.id))
@@ -148,7 +149,8 @@ export function Biblioteca({ alNavegar }: { alNavegar?: () => void }) {
                     </Boton>
                     <Boton
                       variante="fantasma"
-                      className="h-8 w-8 p-0"
+                      icono
+                      tamano="pequeno"
                       onClick={() => {
                         if (confirm(`¿Borrar «${bloque.nombre}» con sus ${temas.length} temas?`)) {
                           void borrarBloque(bloque.id)
@@ -205,7 +207,8 @@ export function Biblioteca({ alNavegar }: { alNavegar?: () => void }) {
                             <div className="flex shrink-0 gap-0.5 text-[var(--tenue)]">
                               <Boton
                                 variante="fantasma"
-                                className="h-8 w-8 p-0"
+                                icono
+                                tamano="pequeno"
                                 onClick={() => {
                                   setCreando(`esquema:${tema.id}`)
                                   setAbiertos((p) => new Set(p).add(tema.id))
@@ -217,7 +220,8 @@ export function Biblioteca({ alNavegar }: { alNavegar?: () => void }) {
                               </Boton>
                               <Boton
                                 variante="fantasma"
-                                className="h-8 w-8 p-0"
+                                icono
+                                tamano="pequeno"
                                 onClick={() => {
                                   if (confirm(`¿Borrar el tema «${tema.nombre}» y sus esquemas?`)) {
                                     void borrarTema(tema.id)
@@ -252,7 +256,8 @@ export function Biblioteca({ alNavegar }: { alNavegar?: () => void }) {
                                   <div className="shrink-0 text-[var(--tenue)]">
                                     <Boton
                                       variante="fantasma"
-                                      className="h-8 w-8 p-0"
+                                      icono
+                                      tamano="pequeno"
                                       onClick={() => {
                                         if (confirm(`¿Borrar el esquema «${esquema.titulo}»?`)) {
                                           void borrarEsquema(esquema.id)
