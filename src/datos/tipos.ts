@@ -67,8 +67,27 @@ export type Nodo = Fusionable & {
   lado?: Lado
   /** Vacío = hereda el color de su rama. */
   color?: string
-  /** 0–5, para el repaso espaciado. Aún sin usar en esta versión. */
+
+  /**
+   * Desplazamiento manual respecto a donde lo pondría el layout automático.
+   * Se guarda como diferencia y no como posición absoluta a propósito: así el
+   * resto del árbol sigue colocándose solo, el desplazamiento sigue
+   * significando lo mismo aunque cambien los hermanos, y «reorganizar» es
+   * simplemente borrar estos dos campos.
+   */
+  despX?: number
+  despY?: number
+
+  // --- repaso espaciado (SM-2); ver estudio/sm2.ts ---
+  /** Última calidad respondida: 1 no me sale, 3 regular, 5 bien. */
   confianza?: number
+  /** Factor de facilidad. Cuanto más alto, más se espacian los repasos. */
+  facilidad?: number
+  /** Días hasta el próximo repaso. */
+  intervalo?: number
+  /** Aciertos seguidos. Dos seguidos cuentan como dominado. */
+  repeticiones?: number
+  /** Momento del próximo repaso. Es lo que indexa la cola. */
   repasarEn?: number
 }
 

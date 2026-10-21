@@ -1,0 +1,9 @@
+node_modules
+dist
+dev-dist
+.git
+.github
+docs
+*.log
+*.tsbuildinfo
+.DS_Store

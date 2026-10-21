@@ -1,14 +1,18 @@
 import { useState } from 'react'
 import { Link, Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import { Ajustes } from './rutas/Ajustes'
+import { ColaRepaso } from './rutas/ColaRepaso'
+import { ModoEstudio } from './rutas/ModoEstudio'
 import { EditorEsquema } from './rutas/EditorEsquema'
 import { Panel } from './rutas/Panel'
 import { Biblioteca } from './ui/Biblioteca'
 import { Boton } from './ui/Boton'
-import { IconoBiblioteca, IconoCerrar } from './ui/iconos'
+import { IconoBiblioteca, IconoCerrar, IconoPanelIzq } from './ui/iconos'
+import { usarPreferencia } from './ui/usarPreferencia'
 
 export function App() {
   const [cajon, setCajon] = useState(false)
+  const [verBiblioteca, setVerBiblioteca] = usarPreferencia('biblioteca', true)
   const ubicacion = useLocation()
 
   return (
@@ -24,6 +28,18 @@ export function App() {
           <IconoBiblioteca />
         </Boton>
 
+        <Boton
+          icono
+          variante="fantasma"
+          className="hidden lg:inline-flex"
+          onClick={() => setVerBiblioteca((v) => !v)}
+          title={verBiblioteca ? 'Ocultar la biblioteca' : 'Mostrar la biblioteca'}
+          aria-label={verBiblioteca ? 'Ocultar la biblioteca' : 'Mostrar la biblioteca'}
+          aria-pressed={verBiblioteca}
+        >
+          <IconoPanelIzq />
+        </Boton>
+
         <Link
           to="/"
           className="px-1.5 font-titulo text-lg font-semibold tracking-tight text-[var(--tinta)]"
@@ -32,8 +48,19 @@ export function App() {
         </Link>
 
         <Link
-          to="/ajustes"
+          to="/repaso"
           className={`ml-auto rounded-lg px-3 py-2 text-sm ${
+            ubicacion.pathname === '/repaso'
+              ? 'bg-[var(--acento-suave)] font-medium text-[var(--acento)]'
+              : 'text-[var(--suave)] hover:bg-[var(--hundido)]'
+          }`}
+        >
+          Repaso
+        </Link>
+
+        <Link
+          to="/ajustes"
+          className={`rounded-lg px-3 py-2 text-sm ${
             ubicacion.pathname === '/ajustes'
               ? 'bg-[var(--acento-suave)] font-medium text-[var(--acento)]'
               : 'text-[var(--suave)] hover:bg-[var(--hundido)]'
@@ -44,14 +71,18 @@ export function App() {
       </header>
 
       <div className="flex min-h-0 flex-1">
-        <aside className="hidden w-72 shrink-0 flex-col border-r border-[var(--linea)] bg-[var(--lamina)] lg:flex">
-          <Biblioteca />
-        </aside>
+        {verBiblioteca && (
+          <aside className="hidden w-72 shrink-0 flex-col border-r border-[var(--linea)] bg-[var(--lamina)] lg:flex">
+            <Biblioteca />
+          </aside>
+        )}
 
         <main className="relative flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
           <Routes>
             <Route path="/" element={<Panel />} />
             <Route path="/esquema/:esquemaId" element={<EditorEsquema />} />
+            <Route path="/esquema/:esquemaId/estudio" element={<ModoEstudio />} />
+            <Route path="/repaso" element={<ColaRepaso />} />
             <Route path="/ajustes" element={<Ajustes />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>

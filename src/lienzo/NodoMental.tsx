@@ -24,6 +24,10 @@ type Props = {
   alEscribir: (texto: string) => void
   alPerderFoco: (id: string) => void
   alTeclearEditando: (e: React.KeyboardEvent<HTMLTextAreaElement>) => void
+  /** Escala del lienzo: convierte píxeles de pantalla en unidades del mapa. */
+  escala: number
+  alArrastrar: (id: string, dx: number, dy: number) => void
+  alSoltarArrastre: () => void
 }
 
 export function NodoMental({
@@ -38,6 +42,9 @@ export function NodoMental({
   alEscribir,
   alPerderFoco,
   alTeclearEditando,
+  escala,
+  alArrastrar,
+  alSoltarArrastre,
 }: Props) {
   const estilo = estiloDe(colocado.profundidad)
   const esRaiz = colocado.profundidad === 0
@@ -63,13 +70,44 @@ export function NodoMental({
     else el.setSelectionRange(el.value.length, el.value.length)
   }, [editando])
 
+  // El umbral evita que un pulsar-y-soltar con un temblor de dos píxeles
+  // cuente como movimiento y ensucie la pila de deshacer.
+  const UMBRAL = 4
+  const arrastre = useRef<{ x: number; y: number; movido: boolean } | null>(null)
+
+  function bajar(e: React.PointerEvent<HTMLDivElement>) {
+    alSeleccionar(colocado.id)
+    if (editando) return
+    e.currentTarget.setPointerCapture(e.pointerId)
+    arrastre.current = { x: e.clientX, y: e.clientY, movido: false }
+  }
+
+  function mover(e: React.PointerEvent<HTMLDivElement>) {
+    const a = arrastre.current
+    if (!a) return
+    const dxPantalla = e.clientX - a.x
+    const dyPantalla = e.clientY - a.y
+    if (!a.movido && Math.hypot(dxPantalla, dyPantalla) < UMBRAL) return
+    a.movido = true
+    alArrastrar(colocado.id, dxPantalla / escala, dyPantalla / escala)
+  }
+
+  function soltar() {
+    const a = arrastre.current
+    arrastre.current = null
+    if (a?.movido) alSoltarArrastre()
+  }
+
   const colorBorde = esRaiz ? 'transparent' : colocado.color
   const grosorBorde = esRaiz ? 0 : colocado.profundidad === 1 ? 2 : 1
 
   return (
     <div
       data-nodo={colocado.id}
-      onPointerDown={() => alSeleccionar(colocado.id)}
+      onPointerDown={bajar}
+      onPointerMove={mover}
+      onPointerUp={soltar}
+      onPointerCancel={soltar}
       onDoubleClick={(e) => {
         e.stopPropagation()
         alEditar(colocado.id)
@@ -98,7 +136,8 @@ export function NodoMental({
         fontWeight: estilo.peso,
         lineHeight: `${estilo.altoLinea}px`,
         textAlign: 'center',
-        cursor: 'default',
+        cursor: editando ? 'text' : 'grab',
+        touchAction: 'none',
         userSelect: 'none',
         outline: seleccionado ? '2px solid var(--acento)' : 'none',
         outlineOffset: 2,

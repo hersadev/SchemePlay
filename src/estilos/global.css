@@ -80,16 +80,6 @@ body {
   overscroll-behavior: none;
 }
 
-/*
- * Con dedo no hay hover: las acciones de cada fila de la biblioteca tienen que
- * estar siempre visibles o serían inalcanzables en el iPad.
- */
-@media (pointer: coarse) {
-  .acciones-fila {
-    opacity: 1 !important;
-  }
-}
-
 /* El lienzo ya gestiona sus propios gestos; que el navegador no interfiera. */
 [role='application'] {
   -webkit-user-select: none;

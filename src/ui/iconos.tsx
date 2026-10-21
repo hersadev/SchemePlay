@@ -118,6 +118,35 @@ export const IconoCerrar = (p: Props) => (
   </Trazo>
 )
 
+export const IconoPanelIzq = (p: Props) => (
+  <Trazo {...p}>
+    <rect x="3" y="4" width="18" height="16" rx="2" />
+    <path d="M9 4v16" />
+  </Trazo>
+)
+
+export const IconoPanelDer = (p: Props) => (
+  <Trazo {...p}>
+    <rect x="3" y="4" width="18" height="16" rx="2" />
+    <path d="M15 4v16" />
+  </Trazo>
+)
+
+export const IconoEstudio = (p: Props) => (
+  <Trazo {...p}>
+    <path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H12v16H6.5A2.5 2.5 0 0 0 4 21z" />
+    <path d="M20 5.5A2.5 2.5 0 0 0 17.5 3H12v16h5.5A2.5 2.5 0 0 1 20 21z" />
+  </Trazo>
+)
+
+export const IconoReorganizar = (p: Props) => (
+  <Trazo {...p}>
+    <path d="M4 7h7M4 17h7" />
+    <rect x="14" y="4" width="6" height="6" rx="1.5" />
+    <rect x="14" y="14" width="6" height="6" rx="1.5" />
+  </Trazo>
+)
+
 export const IconoFlecha = (p: Props) => (
   <Trazo {...p}>
     <path d="M9 6l6 6-6 6" />

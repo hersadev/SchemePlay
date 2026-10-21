@@ -15,6 +15,7 @@ import { db } from '../datos/db'
 import { nuevoId } from '../datos/ids'
 import { compararOrden, ordenEntre, ordenInicial } from '../datos/orden'
 import type { Lado, Nodo } from '../datos/tipos'
+import { programar, type Calidad } from '../estudio/sm2'
 
 export type Comando = {
   nombre: string
@@ -62,6 +63,12 @@ type Estado = {
   cambiarLado: (id: string, lado: Lado) => Promise<void>
   cambiarColor: (id: string, color: string | undefined) => Promise<void>
   cambiarNotas: (id: string, notas: string) => Promise<void>
+  /** Suma un desplazamiento manual al que ya tuviera. La rama le sigue. */
+  mover: (id: string, dx: number, dy: number) => Promise<void>
+  /** Borra el desplazamiento manual: del nodo, o de todo el esquema. */
+  reorganizar: (id?: string) => Promise<void>
+  /** Registra un repaso y reprograma el nodo con SM-2. */
+  valorar: (id: string, calidad: Calidad) => Promise<void>
 
   deshacer: () => Promise<void>
   rehacer: () => Promise<void>
@@ -465,6 +472,54 @@ export const usarEsquema = create<Estado>((set, get) => {
       else delete despues.notas
 
       await ejecutar({ nombre: 'editar notas', antes: [actual], despues: [despues] })
+    },
+
+    async mover(id, dx, dy) {
+      const { nodos } = get()
+      const actual = nodos.get(id)
+      if (!actual) return
+      if (dx === 0 && dy === 0) return
+
+      await ejecutar({
+        nombre: 'mover nodo',
+        antes: [actual],
+        despues: [
+          { ...actual, despX: (actual.despX ?? 0) + dx, despY: (actual.despY ?? 0) + dy },
+        ],
+      })
+    },
+
+    async reorganizar(id) {
+      const { nodos } = get()
+      const afectados = (id ? [nodos.get(id)] : [...nodos.values()]).filter(
+        (n): n is Nodo => Boolean(n) && !n!.borrado && (n!.despX !== undefined || n!.despY !== undefined),
+      )
+      if (!afectados.length) return
+
+      await ejecutar({
+        nombre: 'reorganizar',
+        antes: afectados,
+        despues: afectados.map((n) => {
+          const limpio: Nodo = { ...n }
+          delete limpio.despX
+          delete limpio.despY
+          return limpio
+        }),
+      })
+    },
+
+    async valorar(id, calidad) {
+      const { nodos } = get()
+      const actual = nodos.get(id)
+      if (!actual) return
+
+      const siguiente = programar(actual, calidad)
+
+      await ejecutar({
+        nombre: 'valorar',
+        antes: [actual],
+        despues: [{ ...actual, confianza: calidad, ...siguiente }],
+      })
     },
 
     async deshacer() {

@@ -1,0 +1,22 @@
+services:
+  schemeplay:
+    build:
+      context: .
+      args:
+        # Servida desde la raíz del contenedor. Para colgarla de un subcamino
+        # detrás de un proxy, cambia esto Y el `location` de nginx.conf.
+        BASE_PATH: /
+    image: schemeplay:local
+    container_name: schemeplay
+    ports:
+      - '8080:80'
+    restart: unless-stopped
+    # No hay estado que montar: los esquemas viven en la IndexedDB del
+    # navegador de cada dispositivo, no en el contenedor. Si borras el
+    # contenedor no pierdes nada; si borras los datos del sitio, sí.
+    read_only: true
+    tmpfs:
+      - /var/cache/nginx
+      - /var/run
+    security_opt:
+      - no-new-privileges:true

@@ -11,28 +11,17 @@ import {
 } from '../datos/biblioteca'
 import { db, vivas } from '../datos/db'
 import { porOrden } from '../datos/orden'
-import type { Bloque, Esquema, EstadoTema, Tema } from '../datos/tipos'
+import type { Bloque, Esquema, Nodo, Tema } from '../datos/tipos'
+import { COLOR_ESTADO, NOMBRE_ESTADO, PROGRESO_VACIO, estadoPorProgreso, progresoDe, sumarProgresos, type Progreso } from '../estudio/progreso'
 import { Boton } from './Boton'
 import { IconoFlecha, IconoMas, IconoPapelera } from './iconos'
-
-const COLOR_ESTADO: Record<EstadoTema, string> = {
-  'sin-empezar': 'var(--tenue)',
-  'en-curso': 'var(--estudio)',
-  repasando: 'var(--acento)',
-  dominado: 'var(--bien)',
-}
-
-const NOMBRE_ESTADO: Record<EstadoTema, string> = {
-  'sin-empezar': 'Sin empezar',
-  'en-curso': 'En curso',
-  repasando: 'Repasando',
-  dominado: 'Dominado',
-}
 
 type Arbol = {
   bloques: Bloque[]
   temas: Map<string, Tema[]>
   esquemas: Map<string, Esquema[]>
+  /** Progreso por tema, derivado del repaso: no se marca a mano. */
+  progreso: Map<string, Progreso>
 }
 
 function agrupar<T extends { id: string }>(filas: T[], clave: (f: T) => string): Map<string, T[]> {
@@ -54,15 +43,37 @@ export function Biblioteca({ alNavegar }: { alNavegar?: () => void }) {
   // Una sola consulta viva para todo el árbol: son pocas filas y así se evita
   // llamar a useLiveQuery dentro de un bucle.
   const arbol = useLiveQuery<Arbol>(async () => {
-    const [bloques, temas, esquemas] = await Promise.all([
+    const [bloques, temas, esquemas, nodos] = await Promise.all([
       db.bloques.toArray(),
       db.temas.toArray(),
       db.esquemas.toArray(),
+      db.nodos.toArray(),
     ])
+
+    const porEsquema = new Map<string, Nodo[]>()
+    for (const nodo of vivas(nodos)) {
+      const lista = porEsquema.get(nodo.esquemaId)
+      if (lista) lista.push(nodo)
+      else porEsquema.set(nodo.esquemaId, [nodo])
+    }
+
+    const vivosEsquemas = porOrden(vivas(esquemas))
+    const progreso = new Map<string, Progreso>(
+      porOrden(vivas(temas)).map((t) => [
+        t.id,
+        sumarProgresos(
+          vivosEsquemas
+            .filter((e) => e.temaId === t.id)
+            .map((e) => progresoDe(porEsquema.get(e.id) ?? [])),
+        ),
+      ]),
+    )
+
     return {
       bloques: porOrden(vivas(bloques)),
       temas: agrupar(porOrden(vivas(temas)), (t) => t.bloqueId),
-      esquemas: agrupar(porOrden(vivas(esquemas)), (e) => e.temaId),
+      esquemas: agrupar(vivosEsquemas, (e) => e.temaId),
+      progreso,
     }
   }, [])
 
@@ -122,7 +133,7 @@ export function Biblioteca({ alNavegar }: { alNavegar?: () => void }) {
                     </span>
                   </button>
 
-                  <div className="acciones-fila flex shrink-0 gap-0.5 opacity-0 transition-opacity group-focus-within:opacity-100 group-hover:opacity-100">
+                  <div className="flex shrink-0 gap-0.5 text-[var(--tenue)]">
                     <Boton
                       variante="fantasma"
                       className="h-8 w-8 p-0"
@@ -175,8 +186,15 @@ export function Biblioteca({ alNavegar }: { alNavegar?: () => void }) {
                               </span>
                               <span
                                 className="h-2 w-2 shrink-0 rounded-full"
-                                style={{ background: COLOR_ESTADO[tema.estado] }}
-                                title={NOMBRE_ESTADO[tema.estado]}
+                                style={{
+                                  background:
+                                    COLOR_ESTADO[
+                                      estadoPorProgreso(
+                                        arbol.progreso.get(tema.id) ?? PROGRESO_VACIO,
+                                      )
+                                    ],
+                                }}
+                                title={`${NOMBRE_ESTADO[estadoPorProgreso(arbol.progreso.get(tema.id) ?? PROGRESO_VACIO)]} · ${(arbol.progreso.get(tema.id) ?? PROGRESO_VACIO).porcentaje}%`}
                               />
                               <span className="min-w-0 flex-1 truncate text-[13px] text-[var(--tinta)]">
                                 {tema.numero ? `${tema.numero} · ` : ''}
@@ -184,7 +202,7 @@ export function Biblioteca({ alNavegar }: { alNavegar?: () => void }) {
                               </span>
                             </button>
 
-                            <div className="acciones-fila flex shrink-0 gap-0.5 opacity-0 transition-opacity group-focus-within:opacity-100 group-hover:opacity-100">
+                            <div className="flex shrink-0 gap-0.5 text-[var(--tenue)]">
                               <Boton
                                 variante="fantasma"
                                 className="h-8 w-8 p-0"
@@ -231,7 +249,7 @@ export function Biblioteca({ alNavegar }: { alNavegar?: () => void }) {
                                   >
                                     {esquema.titulo}
                                   </Link>
-                                  <div className="acciones-fila shrink-0 opacity-0 transition-opacity group-focus-within:opacity-100 group-hover:opacity-100">
+                                  <div className="shrink-0 text-[var(--tenue)]">
                                     <Boton
                                       variante="fantasma"
                                       className="h-8 w-8 p-0"

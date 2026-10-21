@@ -7,11 +7,13 @@ import { usarEsquema } from '../estado/almacenEsquema'
 import { Lienzo } from '../lienzo/Lienzo'
 import { Boton } from '../ui/Boton'
 import { Inspector } from '../ui/Inspector'
-import { IconoCerrar } from '../ui/iconos'
+import { IconoCerrar, IconoEstudio, IconoPanelDer, IconoReorganizar } from '../ui/iconos'
+import { usarPreferencia } from '../ui/usarPreferencia'
 
 export function EditorEsquema() {
   const { esquemaId = '' } = useParams()
   const [verInspector, setVerInspector] = useState(false)
+  const [inspectorAnclado, setInspectorAnclado] = usarPreferencia('inspector', true)
   const [titulo, setTitulo] = useState('')
 
   const esquema = useLiveQuery(() => db.esquemas.get(esquemaId), [esquemaId])
@@ -58,6 +60,35 @@ export function EditorEsquema() {
             aria-label="Título del esquema"
             className="min-w-0 flex-1 rounded-md border border-transparent bg-transparent px-1.5 py-1 font-titulo text-lg font-semibold text-[var(--tinta)] outline-none hover:border-[var(--linea)] focus:border-[var(--acento)]"
           />
+          <Link
+            to={`/esquema/${esquema.id}/estudio`}
+            className="inline-flex h-9 shrink-0 items-center gap-1.5 rounded-lg border border-[var(--linea)] bg-[var(--lamina)] px-3 text-xs font-medium text-[var(--tinta)] hover:bg-[var(--hundido)]"
+          >
+            <IconoEstudio tamano={15} />
+            Estudiar
+          </Link>
+
+          <Boton
+            className="h-9 shrink-0 px-3 text-xs"
+            onClick={() => void usarEsquema.getState().reorganizar()}
+            title="Devolver los nodos movidos a su sitio automático"
+          >
+            <IconoReorganizar tamano={15} />
+            Reorganizar
+          </Boton>
+
+          <Boton
+            icono
+            variante="fantasma"
+            className="hidden h-9 w-9 shrink-0 lg:inline-flex"
+            onClick={() => setInspectorAnclado((v) => !v)}
+            title={inspectorAnclado ? 'Ocultar el detalle' : 'Mostrar el detalle'}
+            aria-label={inspectorAnclado ? 'Ocultar el detalle' : 'Mostrar el detalle'}
+            aria-pressed={inspectorAnclado}
+          >
+            <IconoPanelDer tamano={16} />
+          </Boton>
+
           <Boton
             className="h-9 shrink-0 px-3 text-xs lg:hidden"
             onClick={() => setVerInspector((v) => !v)}
@@ -75,9 +106,11 @@ export function EditorEsquema() {
 
       {/* En pantalla ancha el inspector es una columna fija; en el iPad en
           vertical y en el móvil se superpone, para no robarle sitio al mapa. */}
-      <aside className="hidden w-72 shrink-0 border-l border-[var(--linea)] bg-[var(--lamina)] lg:block">
-        <Inspector />
-      </aside>
+      {inspectorAnclado && (
+        <aside className="hidden w-72 shrink-0 border-l border-[var(--linea)] bg-[var(--lamina)] lg:block">
+          <Inspector />
+        </aside>
+      )}
 
       {verInspector && (
         <aside className="absolute inset-x-0 bottom-0 top-auto z-30 max-h-[70%] border-t border-[var(--linea)] bg-[var(--lamina)] shadow-2xl lg:hidden">

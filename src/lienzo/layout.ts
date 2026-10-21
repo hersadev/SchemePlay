@@ -52,6 +52,12 @@ export type OpcionesLayout = {
    * que se teclea en vez de dar un salto al confirmar.
    */
   enEdicion?: { id: string; texto: string }
+  /**
+   * Arrastre en curso. Se suma al desplazamiento ya guardado sin tocar la base:
+   * al pasar por el layout, la rama entera sigue al nodo mientras lo mueves, en
+   * vez de quedarse el nodo suelto y las ramas rotas hasta soltar.
+   */
+  arrastre?: { id: string; dx: number; dy: number }
 }
 
 export function colocar(
@@ -220,6 +226,31 @@ export function colocar(
     y: raizY,
     ocultos: raizMedida.colapsado ? contarDescendientes(raizId) : 0,
   })
+
+  // --- desplazamientos manuales ---
+  // Se acumulan de padres a hijos para que al mover un nodo le siga su rama
+  // entera. Hacerlo en una pasada aparte, y no dentro de `disponer`, mantiene
+  // el layout automático intacto: «reorganizar» es borrar estos dos campos.
+  const pendienteDesp: Array<{ id: string; dx: number; dy: number }> = [
+    { id: raizId, dx: 0, dy: 0 },
+  ]
+  while (pendienteDesp.length) {
+    const { id, dx, dy } = pendienteDesp.pop()!
+    const nodo = nodos.get(id)
+    const puesto = colocados.get(id)
+    if (!puesto) continue
+
+    const vivo = opciones.arrastre?.id === id ? opciones.arrastre : null
+    const acumX = dx + (nodo?.despX ?? 0) + (vivo?.dx ?? 0)
+    const acumY = dy + (nodo?.despY ?? 0) + (vivo?.dy ?? 0)
+
+    if (acumX !== 0 || acumY !== 0) {
+      colocados.set(id, { ...puesto, x: puesto.x + acumX, y: puesto.y + acumY })
+    }
+    for (const hijo of hijosDe.get(id) ?? []) {
+      pendienteDesp.push({ id: hijo.id, dx: acumX, dy: acumY })
+    }
+  }
 
   // --- ramas ---
   const ramas: RamaDibujada[] = []

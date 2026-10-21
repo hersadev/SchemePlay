@@ -14,6 +14,7 @@ type Props = {
 export function Lienzo({ esquemaId, raizId }: Props) {
   const contenedor = useRef<HTMLDivElement>(null)
   const [verAtajos, setVerAtajos] = useState(false)
+  const [arrastre, setArrastre] = useState<{ id: string; dx: number; dy: number } | null>(null)
 
   const nodos = usarEsquema((s) => s.nodos)
   const seleccionado = usarEsquema((s) => s.seleccionado)
@@ -23,8 +24,11 @@ export function Lienzo({ esquemaId, raizId }: Props) {
 
   const mapa = useMemo(
     () =>
-      colocar(nodos, raizId, editando ? { enEdicion: { id: editando, texto: textoVivo } } : {}),
-    [nodos, raizId, editando, textoVivo],
+      colocar(nodos, raizId, {
+        ...(editando ? { enEdicion: { id: editando, texto: textoVivo } } : {}),
+        ...(arrastre ? { arrastre } : {}),
+      }),
+    [nodos, raizId, editando, textoVivo, arrastre],
   )
 
   const { vista, arrastrando, manejadores, encajar, escalar } = usarViewport(
@@ -214,6 +218,14 @@ export function Lienzo({ esquemaId, raizId }: Props) {
     if (acc.editando === id) void acc.terminarEdicion()
   }
 
+  function alSoltarArrastre() {
+    if (!arrastre) return
+    // El desplazamiento se confirma como comando al soltar, no en cada
+    // fotograma: así deshacer revierte el movimiento entero de una vez.
+    void usarEsquema.getState().mover(arrastre.id, arrastre.dx, arrastre.dy)
+    setArrastre(null)
+  }
+
   const acciones = usarEsquema.getState()
 
   return (
@@ -272,6 +284,9 @@ export function Lienzo({ esquemaId, raizId }: Props) {
               alEscribir={acciones.escribir}
               alPerderFoco={alPerderFoco}
               alTeclearEditando={alTeclearEditando}
+              escala={vista.k}
+              alArrastrar={(id, dx, dy) => setArrastre({ id, dx, dy })}
+              alSoltarArrastre={alSoltarArrastre}
             />
           ))}
         </div>

@@ -470,13 +470,16 @@ Más adelante, sin tocar `src/`:
 
 | Fase | Qué entrega | Resultado visible |
 |---|---|---|
-| **0** | Vite + TS + Tailwind + rutas + manifest PWA + despliegue a Cloudflare Pages | Ya la abres e instalas desde Mac, iPad y Windows, aún vacía |
-| **1** | Lienzo propio, layout del árbol, ramas cónicas, atajos de teclado, deshacer | Ya puedes dibujar un esquema |
-| **2** | Dexie + CRUD de bloques, temas y esquemas, lateral, buscador | Biblioteca completa, persistente, offline |
-| **3** | Pulido táctil para iPad: gestos, tiradores, hoja inferior, cajón | Usable de verdad en iPad |
-| **4** | `fusion.ts`, exportar/importar fichero, previsualización, instantáneas y deshacer | El mismo esquema en Mac, iPad y Windows |
-| **5** | Modo estudio, SM-2, cola de repaso, progreso por bloque | Deja de ser un editor y pasa a ser herramienta de estudio |
+| **0** ✅ | Vite + TS + Tailwind + rutas + manifest PWA + despliegue a Cloudflare Pages | Ya la abres e instalas desde Mac, iPad y Windows, aún vacía |
+| **1** ✅ | Lienzo propio, layout del árbol, ramas cónicas, atajos de teclado, deshacer | Ya puedes dibujar un esquema |
+| **2** ✅ | Dexie + CRUD de bloques, temas y esquemas, lateral, buscador | Biblioteca completa, persistente, offline |
+| **3** ✅ | Pulido táctil para iPad: gestos, tiradores, hoja inferior, cajón | Usable de verdad en iPad |
+| **4** ✅ | `fusion.ts`, exportar/importar fichero, previsualización, instantáneas y deshacer | El mismo esquema en Mac, iPad y Windows |
+| **5** ✅ | Modo estudio (tres tapados), SM-2, cola de repaso, progreso derivado | Deja de ser un editor y pasa a ser herramienta de estudio |
 | **6** | Exportar a PNG, PDF y Markdown; File System Access en escritorio | Imprimir esquemas y guardar sin diálogo en Mac y Windows |
+
+Las fases 0 a 5 están hechas. Fuera del plan original se añadieron el arrastre
+manual de nodos, los paneles plegables y el empaquetado en Docker.
 
 Las fases 0–2 ya dan algo que usas a diario. La 4 es la que cumple el requisito
 de los tres dispositivos y, sin servidor, cuesta bastante menos que la versión
