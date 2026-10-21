@@ -1,88 +1,90 @@
 import { useCallback, useEffect, useState } from 'react'
 
 /**
- * Tema de la interfaz.
+ * Tema de la interfaz: claro u oscuro, nada más.
  *
- * Tres estados y no dos: «sistema» es el que casi siempre quieres, porque
- * sigue al modo nocturno del Mac y del iPad sin tener que acordarte de
- * cambiarlo dos veces al día. Claro y oscuro son para forzarlo.
+ * Mientras no hayas elegido, se usa el del sistema, de modo que la primera vez
+ * no abres la app en claro a medianoche. En cuanto tocas el selector, tu
+ * elección queda fija y el sistema deja de mandar.
  *
- * El CSS ya está preparado para los tres: los tokens viven en `:root`, el
- * bloque `prefers-color-scheme` está protegido con `:not([data-theme='light'])`
- * y existe un `[data-theme='dark']` explícito. Aquí solo se decide qué marca
- * lleva el <html>.
+ * La marca en el <html> la pone también un script en index.html, antes del
+ * primer pintado: si solo la pusiera React, cada carga con el tema forzado al
+ * contrario del sistema daría un parpadeo.
  */
-export type Tema = 'sistema' | 'claro' | 'oscuro'
+export type Tema = 'claro' | 'oscuro'
 
 const CLAVE = 'schemeplay.tema'
 const CONSULTA = '(prefers-color-scheme: dark)'
 
 /** Deben coincidir con --fondo en estilos/global.css. */
-const FONDO = { claro: '#f4f6f9', oscuro: '#101318' } as const
+const FONDO: Record<Tema, string> = { claro: '#f4f6f9', oscuro: '#101318' }
 
 export const TEMAS: ReadonlyArray<{ valor: Tema; etiqueta: string }> = [
-  { valor: 'sistema', etiqueta: 'Según el sistema' },
   { valor: 'claro', etiqueta: 'Claro' },
   { valor: 'oscuro', etiqueta: 'Oscuro' },
 ]
 
-function leer(): Tema {
+/** `null` = aún no ha elegido, así que manda el sistema. */
+function leerElegido(): Tema | null {
   try {
     const guardado = localStorage.getItem(CLAVE)
-    return guardado === 'claro' || guardado === 'oscuro' ? guardado : 'sistema'
+    return guardado === 'claro' || guardado === 'oscuro' ? guardado : null
   } catch {
-    return 'sistema'
+    return null
   }
 }
 
-function resolver(tema: Tema): 'claro' | 'oscuro' {
-  if (tema !== 'sistema') return tema
+function delSistema(): Tema {
   return window.matchMedia?.(CONSULTA).matches ? 'oscuro' : 'claro'
 }
 
 function aplicar(tema: Tema): void {
-  const raiz = document.documentElement
-  if (tema === 'sistema') raiz.removeAttribute('data-theme')
-  else raiz.setAttribute('data-theme', tema === 'oscuro' ? 'dark' : 'light')
+  document.documentElement.setAttribute('data-theme', tema === 'oscuro' ? 'dark' : 'light')
 
-  // La barra de estado del iPad en la app instalada usa theme-color. Si no se
-  // actualiza, al forzar un tema queda del color contrario y canta mucho.
+  // La barra de estado del iPad en la app instalada usa theme-color. Sin esto,
+  // al forzar un tema se queda del color contrario y canta mucho.
   let meta = document.querySelector<HTMLMetaElement>('meta[name="theme-color"]')
   if (!meta) {
     meta = document.createElement('meta')
     meta.name = 'theme-color'
     document.head.append(meta)
   }
-  meta.content = FONDO[resolver(tema)]
+  meta.content = FONDO[tema]
 }
 
 export function usarTema() {
-  const [tema, setTema] = useState<Tema>(leer)
+  const [elegido, setElegido] = useState<Tema | null>(leerElegido)
+  const [sistema, setSistema] = useState<Tema>(delSistema)
+
+  const tema: Tema = elegido ?? sistema
 
   useEffect(() => {
     aplicar(tema)
+  }, [tema])
+
+  // Solo mientras no haya elección propia: después, que el sistema cambie al
+  // anochecer no debe pisar lo que pediste.
+  useEffect(() => {
+    if (elegido) return
+    const consulta = window.matchMedia?.(CONSULTA)
+    if (!consulta) return
+    const alCambiar = () => setSistema(delSistema())
+    consulta.addEventListener('change', alCambiar)
+    return () => consulta.removeEventListener('change', alCambiar)
+  }, [elegido])
+
+  const setTema = useCallback((siguiente: Tema) => {
+    setElegido(siguiente)
     try {
-      localStorage.setItem(CLAVE, tema)
+      localStorage.setItem(CLAVE, siguiente)
     } catch {
       /* sin persistir, pero la sesión sigue funcionando */
     }
-  }, [tema])
-
-  // En «sistema» hay que repintar la barra de estado cuando el Mac o el iPad
-  // cambian de modo solos al anochecer; el CSS ya se encarga de los colores.
-  useEffect(() => {
-    if (tema !== 'sistema') return
-    const consulta = window.matchMedia?.(CONSULTA)
-    if (!consulta) return
-    const alCambiar = () => aplicar('sistema')
-    consulta.addEventListener('change', alCambiar)
-    return () => consulta.removeEventListener('change', alCambiar)
-  }, [tema])
-
-  /** Recorre sistema → claro → oscuro → sistema. */
-  const siguiente = useCallback(() => {
-    setTema((previo) => (previo === 'sistema' ? 'claro' : previo === 'claro' ? 'oscuro' : 'sistema'))
   }, [])
 
-  return { tema, efectivo: resolver(tema), setTema, siguiente }
+  const alternar = useCallback(() => {
+    setTema(tema === 'oscuro' ? 'claro' : 'oscuro')
+  }, [tema, setTema])
+
+  return { tema, setTema, alternar }
 }

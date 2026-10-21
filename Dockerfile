@@ -28,6 +28,7 @@ FROM nginx:1.27-alpine AS servicio
 
 COPY --from=construccion /app/dist /usr/share/nginx/html
 COPY nginx.conf /etc/nginx/conf.d/default.conf
+COPY seguridad.conf /etc/nginx/snippets/seguridad.conf
 
 # nginx ya corre como no-root desde la imagen oficial en el proceso worker,
 # pero el healthcheck conviene tenerlo explícito.

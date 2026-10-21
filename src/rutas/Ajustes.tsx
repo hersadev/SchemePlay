@@ -295,9 +295,8 @@ export function Ajustes() {
           ))}
         </div>
         <p className="text-xs leading-relaxed text-[var(--tenue)]">
-          «Según el sistema» sigue al modo nocturno del Mac o del iPad. Como las demás
-          preferencias de interfaz, se guarda en este dispositivo y no viaja en el fichero de
-          trasvase.
+          Hasta que elijas por primera vez se usa el del sistema. Como las demás preferencias de
+          interfaz, se guarda en este dispositivo y no viaja en el fichero de trasvase.
         </p>
       </section>
 

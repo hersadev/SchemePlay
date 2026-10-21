@@ -19,6 +19,26 @@
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-title" content="SchemePlay" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <script>
+      // Marca el tema antes del primer pintado. Si esperase a que arranque
+      // React, cada carga con el tema forzado al contrario del sistema daría
+      // un parpadeo del color equivocado. Ver src/ui/usarTema.ts.
+      // Al cambiarlo hay que regenerar el hash de la CSP: npm run csp
+      try {
+        var guardado = localStorage.getItem('schemeplay.tema');
+        var tema =
+          guardado === 'claro' || guardado === 'oscuro'
+            ? guardado
+            : matchMedia('(prefers-color-scheme: dark)').matches
+              ? 'oscuro'
+              : 'claro';
+        document.documentElement.setAttribute('data-theme', tema === 'oscuro' ? 'dark' : 'light');
+        document.querySelector('meta[name=theme-color]').content =
+          tema === 'oscuro' ? '#101318' : '#f4f6f9';
+      } catch (e) {
+        /* sin localStorage, manda el sistema vía CSS */
+      }
+    </script>
   </head>
   <body>
     <div id="raiz"></div>

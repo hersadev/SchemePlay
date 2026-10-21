@@ -7,21 +7,14 @@ import { EditorEsquema } from './rutas/EditorEsquema'
 import { Panel } from './rutas/Panel'
 import { Biblioteca } from './ui/Biblioteca'
 import { Boton } from './ui/Boton'
-import {
-  IconoBiblioteca,
-  IconoCerrar,
-  IconoLuna,
-  IconoPanelIzq,
-  IconoSistema,
-  IconoSol,
-} from './ui/iconos'
+import { IconoBiblioteca, IconoCerrar, IconoLuna, IconoPanelIzq, IconoSol } from './ui/iconos'
 import { usarTema } from './ui/usarTema'
 import { usarPreferencia } from './ui/usarPreferencia'
 
 export function App() {
   const [cajon, setCajon] = useState(false)
   const [verBiblioteca, setVerBiblioteca] = usarPreferencia('biblioteca', true)
-  const { tema, siguiente } = usarTema()
+  const { tema, alternar } = usarTema()
   const ubicacion = useLocation()
 
   return (
@@ -70,23 +63,12 @@ export function App() {
         <Boton
           icono
           variante="fantasma"
-          onClick={siguiente}
-          title={
-            tema === 'sistema'
-              ? 'Tema: según el sistema'
-              : tema === 'claro'
-                ? 'Tema: claro'
-                : 'Tema: oscuro'
-          }
-          aria-label={
-            tema === 'sistema'
-              ? 'Tema según el sistema. Pulsa para forzar el claro'
-              : tema === 'claro'
-                ? 'Tema claro. Pulsa para forzar el oscuro'
-                : 'Tema oscuro. Pulsa para volver al del sistema'
-          }
+          onClick={alternar}
+          title={tema === 'claro' ? 'Cambiar al tema oscuro' : 'Cambiar al tema claro'}
+          aria-label={tema === 'claro' ? 'Cambiar al tema oscuro' : 'Cambiar al tema claro'}
+          aria-pressed={tema === 'oscuro'}
         >
-          {tema === 'sistema' ? <IconoSistema /> : tema === 'claro' ? <IconoSol /> : <IconoLuna />}
+          {tema === 'claro' ? <IconoLuna /> : <IconoSol />}
         </Boton>
 
         <Link

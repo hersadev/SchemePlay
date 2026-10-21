@@ -160,13 +160,6 @@ export const IconoLuna = (p: Props) => (
   </Trazo>
 )
 
-export const IconoSistema = (p: Props) => (
-  <Trazo {...p}>
-    <rect x="2.5" y="4" width="19" height="12.5" rx="2" />
-    <path d="M8.5 20.5h7M12 16.5v4" />
-  </Trazo>
-)
-
 export const IconoFlecha = (p: Props) => (
   <Trazo {...p}>
     <path d="M9 6l6 6-6 6" />

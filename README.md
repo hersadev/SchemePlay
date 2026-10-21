@@ -41,7 +41,8 @@ El diseño completo, con las decisiones y por qué se tomaron, está en
   seguidas.
 - **Exportar e importar** un `.schemeplay.json` con previsualización,
   instantánea automática previa y deshacer.
-- **Tema claro, oscuro o según el sistema**, con el selector en la cabecera.
+- **Tema claro u oscuro**, con el interruptor en la cabecera. Hasta que elijas
+  por primera vez se usa el del sistema.
 - **PWA**: se instala y arranca sin conexión.
 
 Lo que aún no está: exportar a PNG, PDF y Markdown (fase 6).
