@@ -261,9 +261,14 @@ export function Ajustes() {
                 <Boton
                   tamano="pequeno"
                   onClick={() => {
-                    if (confirm('Esto deja la base como estaba en ese momento. ¿Seguro?')) {
-                      void restaurarInstantanea(i.id)
-                    }
+                    const aviso =
+                      `Esto deja la base como estaba el ${fecha(i.tomadaEn)}. ` +
+                      'También se deshace lo que hayas editado desde entonces, no solo lo importado.\n\n' +
+                      'Antes se guarda otra instantánea, por si quieres volver atrás.'
+                    if (!confirm(aviso)) return
+                    restaurarInstantanea(i.id).catch((e: unknown) =>
+                      alert(e instanceof Error ? e.message : 'No se pudo restaurar la instantánea.'),
+                    )
                   }}
                 >
                   Restaurar
