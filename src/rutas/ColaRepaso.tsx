@@ -22,11 +22,17 @@ type Ficha = {
 }
 
 export function ColaRepaso() {
-  const [indice, setIndice] = useState(0)
   const [revelado, setRevelado] = useState(false)
-  const [hechos, setHechos] = useState(0)
+  /**
+   * Nodos ya valorados en esta sesión. La cola es una consulta en vivo y el
+   * nodo valorado sale de ella solo, así que avanzar además un índice saltaba
+   * la tarjeta siguiente. Filtrar por id no depende de cuándo llegue esa
+   * relectura, y evita que la misma tarjeta asome un instante y se valore dos
+   * veces.
+   */
+  const [hechos, setHechos] = useState<ReadonlySet<string>>(new Set())
 
-  const cola = useLiveQuery<Ficha[]>(async () => {
+  const vencidos = useLiveQuery<Ficha[]>(async () => {
     const ahora = Date.now()
     const [nodos, esquemas, temas] = await Promise.all([
       db.nodos.toArray(),
@@ -58,17 +64,19 @@ export function ColaRepaso() {
     })
   }, [])
 
-  if (!cola) return <p className="p-6 text-sm text-[var(--tenue)]">Mirando qué toca hoy…</p>
+  if (!vencidos) return <p className="p-6 text-sm text-[var(--tenue)]">Mirando qué toca hoy…</p>
+
+  const cola = vencidos.filter((f) => !hechos.has(f.nodo.id))
 
   if (cola.length === 0) {
     return (
       <div className="mx-auto max-w-xl p-6">
         <h1 className="font-titulo text-3xl font-semibold text-[var(--tinta)]">
-          {hechos > 0 ? 'Repaso terminado' : 'Hoy no toca nada'}
+          {hechos.size > 0 ? 'Repaso terminado' : 'Hoy no toca nada'}
         </h1>
         <p className="mt-3 text-sm leading-relaxed text-[var(--suave)]">
-          {hechos > 0
-            ? `Has repasado ${hechos} ${hechos === 1 ? 'nodo' : 'nodos'}. Vuelve mañana.`
+          {hechos.size > 0
+            ? `Has repasado ${hechos.size} ${hechos.size === 1 ? 'nodo' : 'nodos'}. Vuelve mañana.`
             : 'La cola se llena sola a medida que valoras nodos en el modo estudio de cada esquema.'}
         </p>
         <Link to="/" className="mt-4 inline-block text-sm text-[var(--acento)]">
@@ -78,10 +86,14 @@ export function ColaRepaso() {
     )
   }
 
-  const ficha = cola[Math.min(indice, cola.length - 1)]!
+  const ficha = cola[0]!
 
   async function valorar(calidad: Calidad) {
     const siguiente = programar(ficha.nodo, calidad)
+    // Se marca antes de esperar a la escritura: un doble toque mientras tanto
+    // ya no encuentra la tarjeta.
+    setHechos((h) => new Set(h).add(ficha.nodo.id))
+    setRevelado(false)
     await db.nodos.put({
       ...ficha.nodo,
       confianza: calidad,
@@ -91,9 +103,6 @@ export function ColaRepaso() {
       version: ficha.nodo.version + 1,
       actualizadoEn: Date.now(),
     })
-    setHechos((h) => h + 1)
-    setRevelado(false)
-    setIndice((i) => i + 1)
   }
 
   return (
@@ -103,7 +112,7 @@ export function ColaRepaso() {
           ← Salir
         </Link>
         <span className="font-mono text-xs text-[var(--tenue)] tabular-nums">
-          quedan {cola.length - Math.min(indice, cola.length)} · hechos {hechos}
+          quedan {cola.length} · hechos {hechos.size}
         </span>
       </header>
 
