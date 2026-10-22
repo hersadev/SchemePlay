@@ -17,7 +17,7 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['icono.svg'],
+      includeAssets: ['icono.svg', 'apple-touch-icon.png'],
       manifest: {
         name: 'SchemePlay — esquemas de oposición',
         short_name: 'SchemePlay',

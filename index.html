@@ -11,7 +11,9 @@
     />
 
     <link rel="icon" type="image/svg+xml" href="%BASE_URL%icono.svg" />
-    <link rel="apple-touch-icon" href="%BASE_URL%icono.svg" />
+    <!-- Safari no admite SVG aquí. El PNG va a sangre: iOS redondea las
+         esquinas él solo y unas esquinas transparentes las pintaría de negro. -->
+    <link rel="apple-touch-icon" href="%BASE_URL%apple-touch-icon.png" />
 
     <!-- Lo repinta ui/usarTema.ts: con el tema forzado, un meta con media
          query se quedaría en el color contrario. -->
